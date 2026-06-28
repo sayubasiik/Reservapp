@@ -1,0 +1,21 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - qa
+      - production
+  pull_request:
+    branches:
+      - qa
+      - production
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verificar proyecto
+        run: echo "Pipeline funcionando correctamente"
