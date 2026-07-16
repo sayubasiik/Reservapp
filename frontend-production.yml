@@ -1,0 +1,36 @@
+name: Frontend Production
+
+# Corre al hacer push a production, solo si hay cambios en /frontend
+on:
+  push:
+    branches: [production]
+    paths:
+      - "frontend/**"
+  workflow_dispatch: # permite correrla manualmente desde la pestaña Actions
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, Windows]
+    environment: production
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build imagen Docker (nginx sirviendo el build de Vite)
+        run: docker build -t reservas-frontend:latest .
+
+      - name: Detener contenedor anterior (si existe)
+        run: |
+          docker stop reservas-frontend
+          docker rm reservas-frontend
+        continue-on-error: true
+
+      - name: Levantar contenedor
+        run: docker run -d --name reservas-frontend -p 80:80 reservas-frontend:latest
+
+# Usa frontend/Dockerfile y frontend/nginx.conf (incluidos junto a este archivo).
+# Prerrequisito: Docker Desktop instalado y corriendo en la máquina del self-hosted runner.
