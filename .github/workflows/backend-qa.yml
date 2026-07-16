@@ -1,0 +1,72 @@
+name: Backend QA
+
+# Corre en cada push o PR contra la rama qa, solo si hay cambios en /backend
+on:
+  push:
+    branches: [qa]
+    paths:
+      - "backend/**"
+  pull_request:
+    branches: [qa]
+    paths:
+      - "backend/**"
+
+jobs:
+  test:
+    # Corre en un runner de GitHub (gratis), no en el self-hosted.
+    # Es un repo público: correr PRs de forks en el self-hosted es un riesgo de seguridad.
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: reservas_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    defaults:
+      run:
+        working-directory: backend
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/reservas_test
+      SECRET_KEY: qa-secret-key
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: "1440"
+      CORS_ORIGINS: '["http://localhost:5173"]'
+      PROJECT_NAME: "API de Reservas (QA)"
+      ADMIN_EMAIL: admin@ejemplo.com
+      ADMIN_PASSWORD: admin123
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Correr tests (pytest)
+        # Todavía no hay carpeta tests/. pytest sin tests sale con código 5.
+        # Esto evita que la pipeline falle por eso, pero sí falla si hay un error real.
+        run: |
+          pytest -q
+          code=$?
+          if [ $code -eq 5 ]; then
+            echo "No hay tests todavía, se omite."
+            exit 0
+          fi
+          exit $code
