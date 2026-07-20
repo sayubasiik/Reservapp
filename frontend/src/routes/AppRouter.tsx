@@ -7,6 +7,7 @@ import {
 import { Header } from "../components/layout/Header";
 import { HomePage } from "../pages/HomePage";
 import { NotFoundPage } from "../pages/NotFoundPage";
+import { LoginPage } from "../pages/LoginPage";
 
 export function AppRouter() {
   return (
@@ -15,14 +16,19 @@ export function AppRouter() {
 
       <main>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-
           <Route
             path="/login"
-            element={<h1>Inicio de sesión</h1>}
+            element={<LoginPage />}
           />
 
-          <Route path="*" element={<NotFoundPage />} />
+          <Route
+            path="/" element={<HomePage />} 
+          />
+
+          <Route 
+            path="*" element={<NotFoundPage />} 
+          />
+          
         </Routes>
       </main>
     </BrowserRouter>
