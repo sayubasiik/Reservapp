@@ -1,0 +1,177 @@
+/* ============================================
+   AdminLayout — shell del Panel Administrador
+   Sidebar navy + contenido. Mobile-first:
+   en móvil el sidebar va arriba; en desktop, lateral.
+   Compartido por las pantallas 12 y 16-20.
+   ============================================ */
+
+.ad {
+  min-height: 100vh;
+  background: var(--rv-bg);
+  font-family: var(--rv-font);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Sidebar ---- */
+.ad__sidebar {
+  background: var(--rv-navy);
+  color: var(--rv-white);
+  padding: var(--rv-space-3) var(--rv-space-2);
+}
+
+.ad__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-1);
+  margin-bottom: var(--rv-space-3);
+}
+.ad__logo {
+  background: var(--rv-white);
+  color: var(--rv-navy);
+  font-weight: 800;
+  font-size: 16px;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+.ad__brand-name { display: block; font-weight: 700; font-size: 16px; }
+.ad__brand-sub {
+  display: block;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.ad__nav {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--rv-space-1);
+}
+.ad__nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px var(--rv-space-2);
+  border: none;
+  border-radius: var(--rv-radius);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.75);
+  font-family: var(--rv-font);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.ad__nav-item:hover { background: rgba(255, 255, 255, 0.08); color: var(--rv-white); }
+.ad__nav-item.is-active { background: #2947A0; color: var(--rv-white); }
+.ad__nav-icon { font-size: 15px; line-height: 1; }
+
+/* ---- Cuenta / cerrar sesión ---- */
+.ad__account {
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-1);
+  margin-top: var(--rv-space-3);
+  padding-top: var(--rv-space-2);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  flex-wrap: wrap;
+}
+.ad__account-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #3B82F6;
+  color: var(--rv-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.ad__account-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  flex: 1;
+  min-width: 0;
+}
+.ad__logout {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--rv-white);
+  border: none;
+  border-radius: var(--rv-radius);
+  padding: 8px 12px;
+  font-family: var(--rv-font);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.ad__logout:hover { background: rgba(255, 255, 255, 0.2); }
+
+/* ---- Contenido ---- */
+.ad__main {
+  flex: 1;
+  min-width: 0;
+  padding: var(--rv-space-3) var(--rv-space-2);
+}
+
+/* ---- Encabezado de pantalla (reutilizable) ---- */
+.ad__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rv-space-2);
+  margin-bottom: var(--rv-space-3);
+  flex-wrap: wrap;
+}
+.ad__title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--rv-text);
+}
+
+/* Botón primario navy reutilizable en el panel */
+.ad__btn {
+  background: var(--rv-navy);
+  color: var(--rv-white);
+  border: none;
+  border-radius: var(--rv-radius);
+  padding: 12px var(--rv-space-3);
+  font-family: var(--rv-font);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.ad__btn:hover { background: var(--rv-navy-dark); }
+
+.ad__btn--ghost {
+  background: var(--rv-white);
+  color: var(--rv-navy);
+  border: 1px solid #E5E7EB;
+}
+.ad__btn--ghost:hover { background: var(--rv-bg); }
+
+/* Footer del panel */
+.ad__footer {
+  text-align: center;
+  color: var(--rv-text-light);
+  font-size: 12px;
+  padding: var(--rv-space-3) 0 0;
+}
+
+/* ---- Responsive: sidebar lateral fijo en desktop ---- */
+@media (min-width: 900px) {
+  .ad { flex-direction: row; }
+  .ad__sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    min-height: 100vh;
+  }
+  .ad__nav { flex-direction: column; flex-wrap: nowrap; }
+  .ad__main { padding: var(--rv-space-4); }
+  .ad__title { font-size: 28px; }
+}

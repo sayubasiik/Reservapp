@@ -1,0 +1,174 @@
+/* ============================================
+   Calendario (Panel) — Pantalla 16/20
+   ============================================ */
+
+.ac__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-2);
+  flex-wrap: wrap;
+}
+.ac__views {
+  display: flex;
+  gap: 4px;
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  padding: 4px;
+}
+.ac__view {
+  border: none;
+  background: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: var(--rv-font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rv-text-muted);
+  cursor: pointer;
+}
+.ac__view.is-active { background: var(--rv-navy); color: var(--rv-white); }
+
+/* Layout: side + grid */
+.ac__layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rv-space-3);
+}
+
+.ac__side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rv-space-2);
+}
+.ac__panel {
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius-lg);
+  padding: var(--rv-space-2);
+}
+.ac__panel-title {
+  margin: 0 0 var(--rv-space-2);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--rv-navy);
+}
+
+/* Mini calendario */
+.ac__mini-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--rv-space-2);
+}
+.ac__mini-title { font-size: 14px; font-weight: 700; color: var(--rv-navy); }
+.ac__mini-nav {
+  border: none;
+  background: none;
+  color: var(--rv-navy);
+  font-size: 16px;
+  cursor: pointer;
+}
+.ac__mini-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+.ac__mini-dayname {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--rv-text-light);
+  padding: 4px 0;
+}
+.ac__mini-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--rv-text);
+  border-radius: 50%;
+}
+/* Día de hoy: contorno en vez de círculo azul relleno */
+.ac__mini-cell.is-today {
+  background: transparent;
+  color: var(--rv-navy);
+  border: 2px solid var(--rv-navy);
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+/* Leyendas */
+.ac__legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--rv-text);
+  padding: 5px 0;
+}
+.ac__legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Rejilla semanal */
+.ac__grid-wrap {
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius-lg);
+  padding: var(--rv-space-1);
+  overflow-x: auto;
+}
+.ac__grid {
+  display: grid;
+  grid-template-columns: 56px repeat(7, minmax(120px, 1fr));
+  min-width: 760px;
+}
+.ac__cell {
+  border-bottom: 1px solid #F0F1F4;
+  border-right: 1px solid #F0F1F4;
+  padding: 6px;
+  min-height: 56px;
+}
+.ac__cell--corner { border-right: 1px solid #F0F1F4; }
+.ac__col-head {
+  text-align: center;
+  min-height: auto;
+  padding: var(--rv-space-1);
+}
+.ac__col-day { display: block; font-size: 12px; color: var(--rv-text-muted); }
+.ac__col-date { display: block; font-size: 16px; font-weight: 700; color: var(--rv-text); }
+.ac__hour {
+  font-size: 12px;
+  color: var(--rv-text-muted);
+  text-align: right;
+  padding-right: 8px;
+  border-right: 1px solid #F0F1F4;
+}
+.ac__slot { position: relative; }
+
+/* Evento */
+.ac__event {
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 11px;
+  line-height: 1.3;
+  border-left: 3px solid;
+}
+.ac__event-client { display: block; font-weight: 700; color: var(--rv-text); }
+.ac__event-service { display: block; color: var(--rv-text-muted); }
+.ac__event--confirmada { background: #F0FDF4; border-color: var(--rv-green); }
+.ac__event--pendiente  { background: #FFFBEB; border-color: var(--rv-amber); }
+.ac__event--cancelada  { background: #FEF2F2; border-color: var(--rv-red); }
+.ac__event--cancelada .ac__event-client { text-decoration: line-through; color: var(--rv-red); }
+
+/* ---- Responsive: side a la izquierda en desktop ---- */
+@media (min-width: 1100px) {
+  .ac__layout { flex-direction: row; align-items: flex-start; }
+  .ac__side { width: 280px; flex-shrink: 0; }
+  .ac__grid-wrap { flex: 1; }
+}

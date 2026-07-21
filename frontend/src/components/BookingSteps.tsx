@@ -1,0 +1,36 @@
+import './BookingSteps.css';
+
+const steps = ['Servicio', 'Fecha', 'Horario', 'Confirmar', 'Pago'];
+
+interface BookingStepsProps {
+  /** Paso activo (1-5) */
+  current: number;
+}
+
+export default function BookingSteps({ current }: BookingStepsProps) {
+  return (
+    <div className="bs">
+      {/* Barra de progreso */}
+      <div className="bs__track">
+        {steps.map((_, i) => (
+          <div
+            key={i}
+            className={`bs__segment ${i + 1 <= current ? 'is-filled' : ''}`}
+          />
+        ))}
+      </div>
+
+      {/* Labels */}
+      <div className="bs__labels">
+        {steps.map((label, i) => (
+          <span
+            key={label}
+            className={`bs__label ${i + 1 === current ? 'is-active' : ''}`}
+          >
+            {i + 1} {label}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}

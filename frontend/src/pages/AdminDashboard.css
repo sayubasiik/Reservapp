@@ -1,0 +1,202 @@
+/* ============================================
+   Panel Administrador — Dashboard (12/20)
+   Solo estilos propios del dashboard.
+   El shell (sidebar, header, footer) vive en AdminLayout.css
+   ============================================ */
+
+/* ---- Estadísticas ---- */
+.ad__stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--rv-space-2);
+  margin-bottom: var(--rv-space-3);
+}
+.ad__stat {
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius-lg);
+  padding: var(--rv-space-2);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ad__stat-label { font-size: 13px; color: var(--rv-text-muted); }
+.ad__stat-value { font-size: 26px; font-weight: 800; color: var(--rv-text); }
+.ad__stat-delta { font-size: 13px; font-weight: 700; color: var(--rv-green); }
+
+/* ---- Paneles ---- */
+.ad__panel {
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius-lg);
+  padding: var(--rv-space-3);
+  margin-bottom: var(--rv-space-3);
+}
+.ad__panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--rv-space-3);
+}
+.ad__panel-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--rv-text);
+}
+.ad__panel-action {
+  background: none;
+  border: none;
+  color: var(--rv-navy);
+  font-family: var(--rv-font);
+  font-size: 13px;
+  cursor: pointer;
+}
+.ad__panel-action:hover { text-decoration: underline; }
+
+/* ---- Gráfico de barras ---- */
+.ad__chart {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--rv-space-1);
+  height: 180px;
+}
+.ad__bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  gap: 8px;
+}
+.ad__bar {
+  width: 100%;
+  max-width: 48px;
+  background: var(--rv-navy);
+  border-radius: 8px 8px 0 0;
+  transition: height 0.2s ease;
+}
+.ad__bar-label { font-size: 12px; color: var(--rv-text-muted); }
+
+/* ---- Reservas por atender ---- */
+.ad__pending-pill {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #FFFBEB;
+  color: var(--rv-amber);
+  font-size: 12px;
+  font-weight: 700;
+  vertical-align: middle;
+}
+.ad__empty { color: var(--rv-text-muted); font-size: 14px; margin: 0; }
+
+.ad__res-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rv-space-1);
+}
+.ad__res {
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-2);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  padding: 12px var(--rv-space-2);
+  flex-wrap: wrap;
+}
+.ad__res-when {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--rv-cat-blue);
+  border-radius: 8px;
+  padding: 6px 10px;
+  min-width: 70px;
+}
+.ad__res-time { font-size: 13px; font-weight: 800; color: var(--rv-navy); }
+.ad__res-date { font-size: 10px; color: var(--rv-text-muted); }
+.ad__res-info { flex: 1; min-width: 120px; display: flex; flex-direction: column; }
+.ad__res-client { font-size: 14px; font-weight: 700; color: var(--rv-text); }
+.ad__res-service { font-size: 12px; color: var(--rv-text-muted); }
+
+.ad__res-badge {
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--rv-white);
+}
+.ad__res-badge--pendiente  { background: var(--rv-amber); }
+.ad__res-badge--confirmada { background: var(--rv-green); }
+.ad__res-badge--cancelada  { background: var(--rv-red); }
+
+.ad__res-actions { display: flex; gap: 6px; }
+.ad__res-accept {
+  border: none;
+  background: var(--rv-green);
+  color: var(--rv-white);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-family: var(--rv-font);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ad__res-accept:hover { filter: brightness(0.95); }
+.ad__res-reject {
+  border: 1px solid #E5E7EB;
+  background: var(--rv-white);
+  color: var(--rv-red);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-family: var(--rv-font);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ad__res-reject:hover { background: #FEF2F2; }
+
+/* ---- Próximas reservas (legado, sin uso) ---- */
+.ad__upcoming {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rv-space-1);
+}
+.ad__upcoming-item {
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-2);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  padding: 12px var(--rv-space-2);
+}
+.ad__upcoming-time {
+  background: var(--rv-cat-blue);
+  color: var(--rv-navy);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+.ad__upcoming-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #3B82F6;
+  color: var(--rv-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.ad__upcoming-name { font-size: 14px; color: var(--rv-text); }
+
+/* ---- Responsive ---- */
+@media (min-width: 900px) {
+  .ad__stats { grid-template-columns: repeat(4, 1fr); }
+}

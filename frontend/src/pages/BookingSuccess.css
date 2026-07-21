@@ -1,0 +1,148 @@
+/* ============================================
+   Reserva Exitosa — Pantalla 10/12
+   Mobile-first, contenido centrado.
+   ============================================ */
+
+.su {
+  min-height: 100vh;
+  background: var(--rv-bg);
+  font-family: var(--rv-font);
+}
+
+.su__container {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: var(--rv-space-4) var(--rv-space-2);
+  text-align: center;
+}
+
+/* Ícono de éxito con halo verde */
+.su__check-wrap {
+  width: 128px;
+  height: 128px;
+  margin: var(--rv-space-3) auto var(--rv-space-2);
+  border-radius: 50%;
+  background: var(--rv-cat-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.su__check {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: var(--rv-green);
+  color: var(--rv-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  font-weight: 700;
+}
+
+.su__title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--rv-text);
+}
+
+.su__subtitle {
+  margin: var(--rv-space-1) 0 var(--rv-space-3);
+  font-size: 15px;
+  color: var(--rv-text-muted);
+}
+
+/* Tarjeta resumen */
+.su__card {
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-2);
+  text-align: left;
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius-lg);
+  padding: var(--rv-space-2);
+  margin-bottom: var(--rv-space-3);
+}
+
+.su__card-img {
+  width: 90px;
+  height: 90px;
+  border-radius: var(--rv-radius);
+  background-color: #CBD5E1;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.su__card-info { display: flex; flex-direction: column; gap: 4px; }
+
+.su__card-name {
+  margin: 0 0 2px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--rv-text);
+}
+
+.su__card-line {
+  margin: 0;
+  font-size: 13px;
+  color: var(--rv-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.su__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--rv-navy);
+  flex-shrink: 0;
+}
+
+/* Acciones */
+.su__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rv-space-2);
+  justify-content: center;
+}
+
+.su__btn {
+  padding: 16px var(--rv-space-3);
+  border-radius: var(--rv-radius);
+  font-family: var(--rv-font);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.su__btn--primary {
+  background: var(--rv-navy);
+  color: var(--rv-white);
+  border: none;
+}
+.su__btn--primary:hover { background: var(--rv-navy-dark); }
+
+.su__btn--ghost {
+  background: var(--rv-white);
+  color: var(--rv-navy);
+  border: 1px solid var(--rv-navy);
+}
+.su__btn--ghost:hover { background: rgba(30, 58, 138, 0.05); }
+
+.su__footer {
+  text-align: center;
+  color: var(--rv-text-light);
+  font-size: 12px;
+  padding: var(--rv-space-3) 0;
+}
+
+/* ---- Responsive ---- */
+@media (min-width: 640px) {
+  .su__actions { flex-direction: row; }
+  .su__btn { flex: 1; }
+}

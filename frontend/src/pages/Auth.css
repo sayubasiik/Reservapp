@@ -1,0 +1,207 @@
+/* ============================================
+   Autenticación (Login 2/12 y Registro 3/12)
+   Tarjeta blanca centrada sobre fondo gris.
+   Mobile-first.
+   ============================================ */
+
+.auth {
+  min-height: 100vh;
+  background: var(--rv-bg);
+  font-family: var(--rv-font);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--rv-space-3) var(--rv-space-2);
+}
+
+.auth__card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius-lg);
+  padding: var(--rv-space-4) var(--rv-space-3);
+  box-shadow: 0 10px 30px rgba(30, 58, 138, 0.06);
+}
+
+/* Logo (solo en Login) */
+.auth__logo {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto var(--rv-space-2);
+  background: var(--rv-white);
+  color: var(--rv-navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.auth__title {
+  margin: 0;
+  text-align: center;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--rv-text);
+}
+
+.auth__subtitle {
+  margin: var(--rv-space-1) 0 var(--rv-space-3);
+  text-align: center;
+  font-size: 14px;
+  color: var(--rv-text-muted);
+}
+
+/* Selector de rol (Cliente / Administrador) */
+.auth__roles {
+  display: flex;
+  gap: var(--rv-space-1);
+  margin-bottom: var(--rv-space-3);
+}
+.auth__role {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  background: var(--rv-white);
+  font-family: var(--rv-font);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rv-text-muted);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.auth__role.is-active {
+  border-color: var(--rv-navy);
+  background: rgba(30, 58, 138, 0.04);
+  color: var(--rv-navy);
+}
+.auth__role-icon { font-size: 20px; }
+
+/* Selector de giro del negocio */
+.auth__cats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--rv-space-1);
+}
+.auth__cat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px var(--rv-space-2);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  background: var(--rv-white);
+  font-family: var(--rv-font);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--rv-text-muted);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.auth__cat.is-active {
+  border-color: var(--rv-navy);
+  background: rgba(30, 58, 138, 0.04);
+  color: var(--rv-navy);
+}
+.auth__cat-icon { font-size: 18px; }
+
+/* Campos */
+.auth__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: var(--rv-space-2);
+}
+
+.auth__field-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rv-navy);
+}
+
+.auth__input {
+  padding: 14px var(--rv-space-2);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  font-family: var(--rv-font);
+  font-size: 15px;
+  color: var(--rv-text);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.auth__input:focus { border-color: var(--rv-navy); }
+.auth__input::placeholder { color: var(--rv-text-light); }
+
+/* Fila recordarme / olvidaste */
+.auth__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: var(--rv-space-1) 0 var(--rv-space-2);
+  flex-wrap: wrap;
+  gap: var(--rv-space-1);
+}
+
+.auth__check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--rv-text-muted);
+  cursor: pointer;
+}
+.auth__check input { accent-color: var(--rv-navy); }
+
+.auth__check--terms {
+  flex-wrap: wrap;
+  margin-bottom: var(--rv-space-2);
+}
+
+.auth__link {
+  color: var(--rv-navy);
+  font-size: 13px;
+  text-decoration: none;
+}
+.auth__link:hover { text-decoration: underline; }
+
+/* Botón principal */
+.auth__submit {
+  width: 100%;
+  padding: 16px;
+  background: var(--rv-navy);
+  color: var(--rv-white);
+  border: none;
+  border-radius: var(--rv-radius);
+  font-family: var(--rv-font);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.auth__submit:hover { background: var(--rv-navy-dark); }
+
+/* Pie de la tarjeta */
+.auth__foot {
+  margin: var(--rv-space-3) 0 0;
+  text-align: center;
+  font-size: 14px;
+  color: var(--rv-text-muted);
+  line-height: 1.8;
+}
+.auth__foot .auth__link { font-size: 14px; font-weight: 600; }
+
+/* Pie de página */
+.auth__footer {
+  margin-top: var(--rv-space-3);
+  text-align: center;
+  color: var(--rv-text-light);
+  font-size: 12px;
+}

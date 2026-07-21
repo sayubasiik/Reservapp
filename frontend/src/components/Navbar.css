@@ -1,0 +1,99 @@
+/* ============================================
+   Navbar — mobile-first
+   En móvil: logo + hamburguesa + avatar.
+   En escritorio: enlaces centrados y visibles.
+   ============================================ */
+
+.rv-navbar {
+  background: var(--rv-navy);
+  color: var(--rv-white);
+}
+
+.rv-navbar__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--rv-space-2);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rv-space-2);
+}
+
+/* Marca */
+.rv-navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-1);
+}
+.rv-navbar__logo {
+  background: var(--rv-white);
+  color: var(--rv-navy);
+  font-weight: 800;
+  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.rv-navbar__name { font-weight: 700; font-size: 18px; }
+
+/* Botón hamburguesa */
+.rv-navbar__toggle {
+  background: none;
+  border: none;
+  color: var(--rv-white);
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* Enlaces: ocultos en móvil hasta abrir el menú */
+.rv-navbar__links {
+  display: none;
+  flex-direction: column;
+  gap: var(--rv-space-1);
+  width: 100%;
+  order: 3; /* baja a una nueva fila cuando se abre */
+}
+.rv-navbar__links.is-open { display: flex; }
+
+.rv-navbar__link {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-size: 15px;
+  padding: 8px 0;
+}
+.rv-navbar__link.is-active {
+  color: var(--rv-white);
+  font-weight: 600;
+  border-bottom: 2px solid var(--rv-white);
+}
+
+/* Avatar — empujado a la derecha */
+.rv-navbar__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #3B82F6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* ---- Tablet / Escritorio ---- */
+@media (min-width: 768px) {
+  .rv-navbar__toggle { display: none; }
+  .rv-navbar__links {
+    display: flex;
+    flex-direction: row;
+    order: 0;
+    width: auto;
+    flex: none;
+    justify-content: flex-start;
+    gap: var(--rv-space-3);
+  }
+  .rv-navbar__link { padding: 0; }
+  .rv-navbar__link.is-active { padding-bottom: 4px; }
+}

@@ -1,0 +1,269 @@
+/* ============================================
+   Configuración (Panel) — Pantalla 20/20
+   ============================================ */
+
+.as__layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rv-space-2);
+}
+
+/* Pestañas */
+.as__tabs {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.as__tab {
+  padding: 12px var(--rv-space-2);
+  border: none;
+  border-radius: var(--rv-radius);
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  font-family: var(--rv-font);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--rv-text-muted);
+  cursor: pointer;
+  text-align: left;
+}
+.as__tab.is-active { background: var(--rv-cat-blue); color: var(--rv-navy); border-color: var(--rv-cat-blue); }
+
+/* Panel */
+.as__panel {
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius-lg);
+  padding: var(--rv-space-3);
+}
+.as__section-title {
+  margin: 0 0 var(--rv-space-2);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--rv-navy);
+}
+
+.as__logo-row {
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-2);
+  margin-bottom: var(--rv-space-3);
+}
+.as__logo {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--rv-radius);
+  background: var(--rv-cat-blue);
+  color: var(--rv-navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+/* Formulario */
+.as__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--rv-space-2);
+  margin-bottom: var(--rv-space-2);
+}
+.as__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: var(--rv-space-2);
+}
+.as__label { font-size: 13px; font-weight: 700; color: var(--rv-navy); }
+.as__input {
+  padding: 12px var(--rv-space-2);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  font-family: var(--rv-font);
+  font-size: 14px;
+  color: var(--rv-text);
+  outline: none;
+}
+.as__input:focus { border-color: var(--rv-navy); }
+.as__textarea { resize: vertical; min-height: 80px; }
+
+.as__divider {
+  border: none;
+  border-top: 1px solid #E5E7EB;
+  margin: var(--rv-space-3) 0;
+}
+
+/* Horarios */
+.as__hours { display: flex; flex-direction: column; }
+.as__hour-row {
+  display: grid;
+  grid-template-columns: 120px 52px 1fr;
+  align-items: center;
+  gap: var(--rv-space-2);
+  padding: var(--rv-space-2) 0;
+  border-bottom: 1px solid #F0F1F4;
+}
+.as__hour-day { font-size: 14px; font-weight: 700; color: var(--rv-text); }
+.as__hour-value { font-size: 14px; color: var(--rv-text-muted); }
+.as__hour-value.is-closed { color: var(--rv-text-light); }
+
+/* Interruptor */
+.as__switch {
+  width: 44px;
+  height: 24px;
+  border-radius: 999px;
+  border: none;
+  background: #D1D5DB;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  padding: 0;
+}
+.as__switch.is-on { background: var(--rv-navy); }
+.as__switch-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--rv-white);
+  transition: transform 0.15s ease;
+}
+.as__switch.is-on .as__switch-knob { transform: translateX(20px); }
+
+/* Cupos por horario */
+.as__hint {
+  margin: 0 0 var(--rv-space-2);
+  font-size: 13px;
+  color: var(--rv-text-muted);
+}
+.as__slots {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--rv-space-1);
+}
+.as__slot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  padding: 10px var(--rv-space-2);
+}
+.as__slot-time { font-size: 14px; font-weight: 600; color: var(--rv-text); }
+.as__stepper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.as__step {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  background: var(--rv-white);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--rv-navy);
+  cursor: pointer;
+  line-height: 1;
+}
+.as__step:hover { background: var(--rv-bg); }
+.as__step-value {
+  width: 48px;
+  text-align: center;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 6px;
+  font-family: var(--rv-font);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--rv-navy);
+  outline: none;
+}
+
+/* Mesas (restaurante) */
+.as__mesas-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rv-space-2);
+  flex-wrap: wrap;
+}
+.as__mesas-summary {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rv-navy);
+  background: var(--rv-cat-blue);
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+.as__mesas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--rv-space-1);
+  margin-bottom: var(--rv-space-2);
+}
+.as__mesa {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rv-space-1);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  padding: 10px var(--rv-space-2);
+}
+.as__mesa-name { font-size: 14px; font-weight: 700; color: var(--rv-text); flex: 1; }
+.as__mesa-seats {
+  min-width: 64px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--rv-navy);
+}
+.as__mesa-remove {
+  border: 1px solid #FECACA;
+  background: var(--rv-white);
+  color: var(--rv-red);
+  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.as__mesa-remove:hover { background: #FEF2F2; }
+
+.as__mesa-add {
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-2);
+  flex-wrap: wrap;
+  border: 1px dashed #C7CBD3;
+  border-radius: var(--rv-radius);
+  padding: var(--rv-space-2);
+  margin-bottom: var(--rv-space-2);
+}
+.as__mesa-add-label { font-size: 14px; font-weight: 600; color: var(--rv-text-muted); }
+
+/* Acciones */
+.as__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--rv-space-2);
+  margin-top: var(--rv-space-3);
+}
+
+/* ---- Responsive ---- */
+@media (min-width: 768px) {
+  .as__grid { grid-template-columns: repeat(2, 1fr); }
+  .as__slots { grid-template-columns: repeat(2, 1fr); }
+  .as__mesas { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 900px) {
+  .as__layout { flex-direction: row; align-items: flex-start; }
+  .as__tabs { flex-direction: column; width: 220px; flex-shrink: 0; }
+  .as__panel { flex: 1; }
+}

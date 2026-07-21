@@ -1,0 +1,200 @@
+/* ============================================
+   Selección de Fecha — Pantalla 6/12
+   Mobile-first
+   ============================================ */
+
+.ds {
+  min-height: 100vh;
+  background: var(--rv-bg);
+  font-family: var(--rv-font);
+}
+
+.ds__container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--rv-space-2);
+}
+
+/* ---- Card principal ---- */
+.ds__card {
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius-lg);
+  padding: var(--rv-space-3);
+}
+
+.ds__title {
+  margin: 0 0 var(--rv-space-2);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--rv-text);
+  text-align: center;
+}
+
+/* ---- Navegación de mes ---- */
+.ds__month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--rv-space-2);
+  margin-bottom: var(--rv-space-3);
+}
+
+.ds__month-btn {
+  background: var(--rv-navy);
+  color: var(--rv-white);
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ds__month-btn:hover {
+  background: var(--rv-navy-dark);
+}
+
+.ds__month-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--rv-navy);
+}
+
+/* ---- Grid del calendario ---- */
+.ds__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: var(--rv-space-1);
+}
+
+.ds__grid--header {
+  margin-bottom: 0;
+}
+
+.ds__day-name {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rv-text);
+  padding: 8px 0;
+}
+
+.ds__cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  font-family: var(--rv-font);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--rv-text);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.ds__cell:hover:not(.is-empty):not(.is-selected) {
+  background: var(--rv-bg);
+}
+
+/* Día seleccionado: solo un contorno (sin círculo azul relleno) */
+.ds__cell.is-selected {
+  background: transparent;
+  color: var(--rv-navy);
+  border: 2px solid var(--rv-navy);
+  border-radius: var(--rv-radius);
+  font-weight: 800;
+}
+
+.ds__cell.is-empty {
+  cursor: default;
+}
+
+/* Fechas que ya pasaron: gris muy tenue y sin interacción */
+.ds__cell.is-past {
+  color: #D7DBE2;
+  cursor: not-allowed;
+}
+.ds__cell.is-past:hover {
+  background: none;
+}
+
+/* ---- Barra de fecha seleccionada ---- */
+.ds__selected-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--rv-space-1);
+  background: var(--rv-bg);
+  border-radius: var(--rv-radius);
+  padding: 14px var(--rv-space-2);
+  margin: var(--rv-space-3) 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--rv-text);
+}
+
+.ds__selected-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--rv-navy);
+  flex-shrink: 0;
+}
+
+/* ---- Botón continuar ---- */
+.ds__continue-btn {
+  display: block;
+  width: 60%;
+  margin: 0 auto;
+  padding: 16px;
+  background: var(--rv-navy);
+  color: var(--rv-white);
+  border: none;
+  border-radius: var(--rv-radius);
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--rv-font);
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+.ds__continue-btn:hover:not(:disabled) {
+  background: var(--rv-navy-dark);
+}
+.ds__continue-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---- Footer ---- */
+.ds__footer {
+  text-align: center;
+  color: var(--rv-text-light);
+  font-size: 12px;
+  padding: var(--rv-space-3) 0;
+}
+
+/* ---- Responsive ---- */
+@media (min-width: 640px) {
+  .ds__cell {
+    font-size: 15px;
+  }
+  .ds__title {
+    font-size: 26px;
+  }
+}
+
+@media (min-width: 768px) {
+  .ds__container {
+    padding: var(--rv-space-3);
+  }
+  .ds__card {
+    padding: var(--rv-space-4);
+  }
+}

@@ -1,0 +1,153 @@
+/* ============================================
+   Mis Reservas — Pantalla 11/12
+   Mobile-first.
+   ============================================ */
+
+.mr {
+  min-height: 100vh;
+  background: var(--rv-bg);
+  font-family: var(--rv-font);
+}
+
+.mr__container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--rv-space-2);
+}
+
+.mr__title {
+  margin: 0 0 var(--rv-space-2);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--rv-text);
+}
+
+/* ---- Pestañas ---- */
+.mr__tabs {
+  display: flex;
+  gap: var(--rv-space-1);
+  margin-bottom: var(--rv-space-3);
+  flex-wrap: wrap;
+}
+
+.mr__tab {
+  padding: 12px var(--rv-space-3);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  background: var(--rv-white);
+  font-family: var(--rv-font);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--rv-text-muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.mr__tab.is-active {
+  background: var(--rv-navy);
+  color: var(--rv-white);
+  border-color: var(--rv-navy);
+}
+
+/* ---- Lista ---- */
+.mr__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rv-space-2);
+}
+
+.mr__item {
+  position: relative;
+  display: flex;
+  gap: var(--rv-space-2);
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius-lg);
+  padding: var(--rv-space-2);
+}
+
+.mr__item-img {
+  width: 96px;
+  height: 96px;
+  border-radius: var(--rv-radius);
+  background-color: #CBD5E1;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.mr__item-body { flex: 1; min-width: 0; }
+
+.mr__item-name {
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--rv-text);
+}
+
+.mr__item-line {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: var(--rv-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mr__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--rv-navy);
+  flex-shrink: 0;
+}
+
+.mr__item-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-1);
+  margin-top: var(--rv-space-1);
+}
+
+.mr__action {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rv-navy);
+  text-decoration: none;
+}
+.mr__action:hover { text-decoration: underline; }
+.mr__action--danger { color: var(--rv-red); }
+.mr__action-sep { color: var(--rv-text-light); }
+
+/* ---- Badge de estado ---- */
+.mr__badge {
+  position: absolute;
+  top: var(--rv-space-2);
+  right: var(--rv-space-2);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--rv-white);
+}
+.mr__badge--confirmada { background: var(--rv-green); }
+.mr__badge--pendiente  { background: var(--rv-amber); }
+.mr__badge--cancelada  { background: var(--rv-red); }
+
+.mr__empty {
+  text-align: center;
+  color: var(--rv-text-muted);
+  padding: var(--rv-space-4) 0;
+}
+
+.mr__footer {
+  text-align: center;
+  color: var(--rv-text-light);
+  font-size: 12px;
+  padding: var(--rv-space-3) 0;
+}
+
+/* ---- Responsive ---- */
+@media (min-width: 768px) {
+  .mr__container { padding: var(--rv-space-3); }
+  .mr__title { font-size: 28px; }
+}

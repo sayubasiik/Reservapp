@@ -1,0 +1,92 @@
+/* ============================================
+   Galería (Panel) — Pantalla 18/20
+   ============================================ */
+
+.ag__filters {
+  display: flex;
+  gap: var(--rv-space-1);
+  overflow-x: auto;
+  padding-bottom: var(--rv-space-1);
+  margin-bottom: var(--rv-space-3);
+}
+.ag__filter {
+  flex: 0 0 auto;
+  padding: 10px var(--rv-space-2);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  background: var(--rv-white);
+  font-family: var(--rv-font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rv-text-muted);
+  cursor: pointer;
+}
+.ag__filter.is-active {
+  background: var(--rv-navy);
+  color: var(--rv-white);
+  border-color: var(--rv-navy);
+}
+
+.ag__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--rv-space-2);
+}
+
+.ag__item {
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius-lg);
+  overflow: hidden;
+}
+.ag__media {
+  position: relative;
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ag__media--blue  { background: var(--rv-cat-blue); }
+.ag__media--pink  { background: var(--rv-cat-pink); }
+.ag__media--amber { background: var(--rv-cat-amber); }
+.ag__media--green { background: var(--rv-cat-green); }
+.ag__media--gray  { background: var(--rv-cat-gray); }
+.ag__thumb { font-size: 28px; opacity: 0.55; }
+
+.ag__tools {
+  position: absolute;
+  top: var(--rv-space-1);
+  right: var(--rv-space-1);
+  display: flex;
+  gap: 4px;
+}
+.ag__tool {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ag__tool:hover { background: var(--rv-white); }
+
+.ag__body { padding: var(--rv-space-2); }
+.ag__title-item {
+  margin: 0 0 2px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--rv-text);
+}
+.ag__business { margin: 0; font-size: 12px; color: var(--rv-text-muted); }
+
+/* ---- Responsive ---- */
+@media (min-width: 700px) {
+  .ag__grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 1024px) {
+  .ag__grid { grid-template-columns: repeat(4, 1fr); }
+}

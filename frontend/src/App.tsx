@@ -1,7 +1,56 @@
-import { AppRouter } from "./routes/AppRouter";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { RequireAuth, RequireAdmin } from './auth/guards';
+import Splash from './pages/Splash';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Home from './pages/Home';
+import Search from './pages/Search';
+import Favorites from './pages/Favorites';
+import Profile from './pages/Profile';
+import ServiceDetail from './pages/ServiceDetail';
+import DateSelect from './pages/DateSelect';
+import TimeSelect from './pages/TimeSelect';
+import BookingConfirm from './pages/BookingConfirm';
+import Payment from './pages/Payment';
+import BookingSuccess from './pages/BookingSuccess';
+import MyReservations from './pages/MyReservations';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminCalendar from './pages/AdminCalendar';
+import AdminClients from './pages/AdminClients';
+import AdminGallery from './pages/AdminGallery';
+import AdminMessages from './pages/AdminMessages';
+import AdminSettings from './pages/AdminSettings';
 
-function App() {
-  return <AppRouter />;
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Público (onboarding y autenticación) */}
+        <Route path="/bienvenida" element={<Splash />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/registro" element={<Register />} />
+
+        {/* App del cliente (requiere sesión) */}
+        <Route path="/" element={<RequireAuth><Home /></RequireAuth>} />
+        <Route path="/buscar" element={<RequireAuth><Search /></RequireAuth>} />
+        <Route path="/favoritos" element={<RequireAuth><Favorites /></RequireAuth>} />
+        <Route path="/perfil" element={<RequireAuth><Profile /></RequireAuth>} />
+        <Route path="/servicio/:id" element={<RequireAuth><ServiceDetail /></RequireAuth>} />
+        <Route path="/reservar/:id/fecha" element={<RequireAuth><DateSelect /></RequireAuth>} />
+        <Route path="/reservar/:id/horario" element={<RequireAuth><TimeSelect /></RequireAuth>} />
+        <Route path="/reservar/:id/confirmar" element={<RequireAuth><BookingConfirm /></RequireAuth>} />
+        <Route path="/reservar/:id/pago" element={<RequireAuth><Payment /></RequireAuth>} />
+        <Route path="/reservar/:id/exito" element={<RequireAuth><BookingSuccess /></RequireAuth>} />
+        <Route path="/mis-reservas" element={<RequireAuth><MyReservations /></RequireAuth>} />
+
+        {/* Panel del negocio (requiere rol admin) */}
+        <Route path="/admin" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
+        <Route path="/admin/calendario" element={<RequireAdmin><AdminCalendar /></RequireAdmin>} />
+        <Route path="/admin/clientes" element={<RequireAdmin><AdminClients /></RequireAdmin>} />
+        <Route path="/admin/galeria" element={<RequireAdmin><AdminGallery /></RequireAdmin>} />
+        <Route path="/admin/mensajes" element={<RequireAdmin><AdminMessages /></RequireAdmin>} />
+        <Route path="/admin/configuracion" element={<RequireAdmin><AdminSettings /></RequireAdmin>} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
-
-export default App;
