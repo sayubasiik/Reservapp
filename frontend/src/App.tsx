@@ -3,6 +3,7 @@ import { RequireAuth, RequireAdmin } from './auth/guards';
 import Splash from './pages/Splash';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
 import Home from './pages/Home';
 import Search from './pages/Search';
 import Favorites from './pages/Favorites';
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/bienvenida" element={<Splash />} />
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Register />} />
+        <Route path="/recuperar" element={<ForgotPassword />} />
 
         {/* App del cliente (requiere sesión) */}
         <Route path="/" element={<RequireAuth><Home /></RequireAuth>} />

@@ -18,6 +18,24 @@ function formatDate(dateStr: string): string {
   return `${d} ${MONTH_NAMES[m - 1]} ${y}`;
 }
 
+// Convierte "10:00 AM" a minutos desde medianoche, para comparar con la hora actual.
+function slotToMinutes(slot: string): number {
+  const m = slot.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  if (!m) return 0;
+  let h = Number(m[1]);
+  const min = Number(m[2]);
+  const pm = /pm/i.test(m[3]);
+  if (h === 12) h = 0;
+  if (pm) h += 12;
+  return h * 60 + min;
+}
+
+// yyyy-mm-dd de hoy en la zona local (para saber si la fecha elegida es hoy).
+function todayISO(): string {
+  const n = new Date();
+  return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+}
+
 // Pantalla 7/20 — Selección de Horario
 export default function TimeSelect() {
   const { id } = useParams<{ id: string }>();
@@ -29,6 +47,11 @@ export default function TimeSelect() {
   const { getAvailable } = useStore();
 
   const [selected, setSelected] = useState<string | null>(null);
+
+  // Si la reserva es para hoy, los horarios que ya pasaron no se pueden elegir.
+  const isToday = date === todayISO();
+  const nowMinutes = new Date().getHours() * 60 + new Date().getMinutes();
+  const hasPassed = (slot: string) => isToday && slotToMinutes(slot) <= nowMinutes;
 
   const handleConfirm = () => {
     if (selected) {
@@ -54,18 +77,20 @@ export default function TimeSelect() {
           {/* Grid de horarios (los espacios disponibles vienen del negocio) */}
           <div className="ts__grid">
             {TIME_SLOTS.map((slot) => {
+              const passed = hasPassed(slot);
               const available = id && date ? getAvailable(id, date, slot) : 0;
               const occupied = available <= 0;
+              const disabled = occupied || passed;
               return (
                 <button
                   key={slot}
-                  className={`ts__slot ${selected === slot ? 'is-selected' : ''} ${occupied ? 'is-occupied' : ''}`}
-                  disabled={occupied}
-                  onClick={() => !occupied && setSelected(slot)}
+                  className={`ts__slot ${selected === slot ? 'is-selected' : ''} ${disabled ? 'is-occupied' : ''}`}
+                  disabled={disabled}
+                  onClick={() => !disabled && setSelected(slot)}
                 >
                   <span className="ts__slot-time">{slot}</span>
                   <span className="ts__slot-tag">
-                    {occupied ? 'Ocupado' : `${available} ${available === 1 ? 'lugar' : 'lugares'}`}
+                    {passed ? 'Ya pasó' : occupied ? 'Ocupado' : `${available} ${available === 1 ? 'lugar' : 'lugares'}`}
                   </span>
                 </button>
               );

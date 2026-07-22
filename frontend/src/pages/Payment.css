@@ -246,3 +246,7 @@
     top: var(--rv-space-2);
   }
 }
+
+/* Validación de tarjeta */
+.py__input.has-error { border-color: #DC2626; background: #FEF2F2; }
+.py__error { display: block; margin-top: 4px; font-size: 12px; font-weight: 600; color: #DC2626; }

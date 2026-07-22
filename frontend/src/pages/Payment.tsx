@@ -25,6 +25,47 @@ function formatDate(dateStr: string): string {
   return `${d} ${MONTH_NAMES[m - 1]} ${y}`;
 }
 
+// --- Validación de tarjeta ---
+// Algoritmo de Luhn: valida que el número de tarjeta sea plausible.
+function luhnValid(num: string): boolean {
+  const digits = num.replace(/\D/g, '');
+  if (digits.length < 13 || digits.length > 19) return false;
+  let sum = 0;
+  let alt = false;
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let n = Number(digits[i]);
+    if (alt) { n *= 2; if (n > 9) n -= 9; }
+    sum += n;
+    alt = !alt;
+  }
+  return sum % 10 === 0;
+}
+
+// Agrupa el número de tarjeta en bloques de 4: "1234 5678 9012 3456"
+function formatCardNumber(v: string): string {
+  return v.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
+}
+
+// Formatea el vencimiento como MM/AA mientras se escribe.
+function formatExpiry(v: string): string {
+  const d = v.replace(/\D/g, '').slice(0, 4);
+  return d.length <= 2 ? d : `${d.slice(0, 2)}/${d.slice(2)}`;
+}
+
+// El vencimiento (MM/AA) debe ser un mes válido y no estar vencido.
+function expiryValid(v: string): boolean {
+  const m = v.match(/^(\d{2})\/(\d{2})$/);
+  if (!m) return false;
+  const month = Number(m[1]);
+  const year = 2000 + Number(m[2]);
+  if (month < 1 || month > 12) return false;
+  const now = new Date();
+  const lastDay = new Date(year, month, 0); // último día del mes de vencimiento
+  return lastDay >= new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
+type CardErrors = Partial<Record<'number' | 'expiry' | 'cvv' | 'holder', string>>;
+
 // Pantalla 9/12 — Pago
 export default function Payment() {
   const { id } = useParams<{ id: string }>();
@@ -34,6 +75,8 @@ export default function Payment() {
   const service = id ? serviceDetails[id] : undefined;
 
   const [method, setMethod] = useState<PayMethod>('card');
+  const [card, setCard] = useState({ number: '', expiry: '', cvv: '', holder: '' });
+  const [cardErrors, setCardErrors] = useState<CardErrors>({});
   const { book } = useStore();
   const { user } = useAuth();
 
@@ -46,7 +89,20 @@ export default function Payment() {
     );
   }
 
+  const validateCard = (): boolean => {
+    const e: CardErrors = {};
+    if (!luhnValid(card.number)) e.number = 'Número de tarjeta inválido.';
+    if (!expiryValid(card.expiry)) e.expiry = 'Vencimiento inválido o tarjeta expirada.';
+    if (!/^\d{3,4}$/.test(card.cvv)) e.cvv = 'El CVV debe tener 3 o 4 dígitos.';
+    if (card.holder.trim().length < 3) e.holder = 'Escribe el nombre del titular.';
+    setCardErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
   const handlePay = () => {
+    // Si paga con tarjeta, valida los datos antes de continuar.
+    if (method === 'card' && !validateCard()) return;
+
     const date = state?.date ?? '';
     const time = state?.time ?? '';
     // Registra la reserva (queda pendiente hasta que el negocio la acepte).
@@ -106,22 +162,53 @@ export default function Payment() {
 
                 <label className="py__field">
                   <span className="py__field-label">Número de tarjeta</span>
-                  <input type="text" className="py__input" placeholder="1234 5678 9012 3456" />
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    className={`py__input ${cardErrors.number ? 'has-error' : ''}`}
+                    placeholder="1234 5678 9012 3456"
+                    value={card.number}
+                    onChange={(e) => setCard((c) => ({ ...c, number: formatCardNumber(e.target.value) }))}
+                  />
+                  {cardErrors.number && <span className="py__error">{cardErrors.number}</span>}
                 </label>
 
                 <label className="py__field">
                   <span className="py__field-label">Vencimiento</span>
-                  <input type="text" className="py__input" placeholder="MM/AA" />
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    className={`py__input ${cardErrors.expiry ? 'has-error' : ''}`}
+                    placeholder="MM/AA"
+                    value={card.expiry}
+                    onChange={(e) => setCard((c) => ({ ...c, expiry: formatExpiry(e.target.value) }))}
+                  />
+                  {cardErrors.expiry && <span className="py__error">{cardErrors.expiry}</span>}
                 </label>
 
                 <label className="py__field">
                   <span className="py__field-label">CVV</span>
-                  <input type="text" className="py__input" placeholder="CVV" />
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    className={`py__input ${cardErrors.cvv ? 'has-error' : ''}`}
+                    placeholder="CVV"
+                    value={card.cvv}
+                    onChange={(e) => setCard((c) => ({ ...c, cvv: e.target.value.replace(/\D/g, '').slice(0, 4) }))}
+                  />
+                  {cardErrors.cvv && <span className="py__error">{cardErrors.cvv}</span>}
                 </label>
 
                 <label className="py__field">
                   <span className="py__field-label">Titular</span>
-                  <input type="text" className="py__input" placeholder="Nombre en tarjeta" />
+                  <input
+                    type="text"
+                    className={`py__input ${cardErrors.holder ? 'has-error' : ''}`}
+                    placeholder="Nombre en tarjeta"
+                    value={card.holder}
+                    onChange={(e) => setCard((c) => ({ ...c, holder: e.target.value }))}
+                  />
+                  {cardErrors.holder && <span className="py__error">{cardErrors.holder}</span>}
                 </label>
               </div>
             )}
