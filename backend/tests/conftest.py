@@ -66,14 +66,20 @@ def register_user(client):
         email: str = "cliente@example.com",
         password: str = "Password123",
         full_name: str = "Cliente Prueba",
+        role: str | None = None,
     ):
+        payload = {
+            "email": email,
+            "password": password,
+            "full_name": full_name,
+        }
+
+        if role is not None:
+            payload["role"] = role
+
         return client.post(
             "/api/auth/register",
-            json={
-                "email": email,
-                "password": password,
-                "full_name": full_name,
-            },
+            json=payload,
         )
 
     return _register
