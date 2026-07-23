@@ -60,7 +60,7 @@ def cancel_reservation(
     current_user: User = Depends(get_current_user),
 ):
     """Cancelar una reserva. El dueño o un admin pueden cancelarla."""
-    reservation = db.query(Reservation).get(reservation_id)
+    reservation = db.get(Reservation, reservation_id)
     if not reservation:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Reserva no encontrada")
 
