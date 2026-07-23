@@ -339,3 +339,24 @@
     height: 320px;
   }
 }
+
+/* ---- Redes sociales del negocio ---- */
+.sd__social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: var(--rv-space-2);
+}
+.sd__social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--rv-cat-blue);
+  color: var(--rv-navy);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.sd__social-link:hover { background: #dbeafe; }

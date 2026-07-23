@@ -131,9 +131,19 @@
 }
 
 .bc__total-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   font-size: 18px;
   font-weight: 700;
   color: var(--rv-text);
+}
+
+/* Desglose del precio (por noche, por persona, etc.) */
+.bc__total-note {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--rv-text-muted);
 }
 
 .bc__total-value {

@@ -1,10 +1,42 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { businesses, businessInitials, slugify } from '../data/businesses';
+import { businessInitials, slugify } from '../data/businesses';
 import type { BusinessType } from '../data/businesses';
+import { demoAccounts } from '../data/demoAccounts';
 
 // Dos tipos de usuario según la rúbrica: cliente y dueño de negocio (admin).
 export type Role = 'customer' | 'admin';
+
+// Dirección guardada del cliente.
+export interface SavedAddress {
+  id: string;
+  label: string;    // "Casa", "Trabajo", etc.
+  address: string;  // dirección completa
+}
+
+// Método de pago guardado (solo se guardan los últimos 4 dígitos).
+export interface SavedCard {
+  id: string;
+  brand: string;    // "Visa", "Mastercard", etc.
+  last4: string;
+  holder: string;
+  expiry: string;   // MM/AA
+}
+
+// Preferencias de notificaciones del cliente.
+export interface NotificationPrefs {
+  reservations: boolean; // confirmaciones y cambios de reserva
+  reminders: boolean;    // recordatorios previos a la cita
+  promotions: boolean;   // ofertas y novedades
+  email: boolean;        // copia por correo
+}
+
+export const DEFAULT_NOTIFICATIONS: NotificationPrefs = {
+  reservations: true,
+  reminders: true,
+  promotions: false,
+  email: true,
+};
 
 export interface AuthUser {
   id: string;
@@ -14,6 +46,9 @@ export interface AuthUser {
   email: string;
   phone?: string;
   avatar?: string;             // foto de perfil (dataURL) — se edita en el perfil
+  addresses?: SavedAddress[];  // direcciones guardadas (cliente)
+  cards?: SavedCard[];         // métodos de pago (cliente)
+  notifications?: NotificationPrefs; // preferencias de notificaciones (cliente)
   businessId?: string;         // solo admin: negocio que administra
   businessType?: BusinessType; // solo admin: giro del negocio
 }
@@ -47,29 +82,44 @@ interface AuthContextValue {
 }
 
 /* ---- Cuentas de prueba (semilla) ----
-   Un cliente demo y un admin por cada negocio. La contraseña es de prueba.
+   Varios clientes y un admin por cada negocio (ver data/demoAccounts.ts).
+   Se listan en el cuadro de cuentas de prueba del login.
    El negocio del admin queda determinado por su credencial (no se elige). */
 function seedAccounts(): Account[] {
-  const customer: Account = {
-    id: 'cust-demo',
-    role: 'customer',
-    name: 'Olaf Andrade',
-    initials: 'OA',
-    email: 'olaf.andrade@correo.com',
-    password: '123456',
-    phone: '(55) 1234 5678',
-  };
-  const admins: Account[] = businesses.map((b) => ({
-    id: `admin-${b.id}`,
-    role: 'admin',
-    name: b.name,
-    initials: businessInitials(b.name),
-    email: `contacto@${b.id.replace(/-/g, '')}.com`,
-    password: 'admin123',
-    businessId: b.id,
-    businessType: b.type,
-  }));
-  return [customer, ...admins];
+  return demoAccounts.map((d) => {
+    const base: Account = {
+      id: d.businessId ? `admin-${d.businessId}` : `cust-${slugify(d.name)}`,
+      role: d.role,
+      name: d.name,
+      initials: businessInitials(d.name),
+      email: d.email,
+      password: d.password,
+      phone: d.phone,
+    };
+    if (d.role === 'admin') {
+      return { ...base, businessId: d.businessId, businessType: d.businessType };
+    }
+    // El cliente principal arranca con datos de ejemplo; los demás, en blanco.
+    const isMain = d.email === 'olaf.andrade@correo.com';
+    return {
+      ...base,
+      addresses: isMain
+        ? [{ id: 'a1', label: 'Casa', address: 'Av. Universidad 123, Col. Centro, CDMX' }]
+        : [],
+      cards: isMain
+        ? [{ id: 'c1', brand: 'Visa', last4: '4242', holder: d.name, expiry: '08/28' }]
+        : [],
+      notifications: { ...DEFAULT_NOTIFICATIONS },
+    };
+  });
+}
+
+// Agrega las cuentas de prueba que falten a las ya guardadas en localStorage,
+// para que al añadir una cuenta demo nueva aparezca sin tener que borrar datos.
+function withDemoAccounts(saved: Account[]): Account[] {
+  const emails = new Set(saved.map((a) => a.email.toLowerCase()));
+  const missing = seedAccounts().filter((a) => !emails.has(a.email.toLowerCase()));
+  return missing.length ? [...saved, ...missing] : saved;
 }
 
 const USER_KEY = 'reservvap_user';
@@ -92,7 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [accounts, setAccounts] = useState<Account[]>(() => {
     try {
       const raw = localStorage.getItem(ACCOUNTS_KEY);
-      if (raw) return JSON.parse(raw) as Account[];
+      if (raw) return withDemoAccounts(JSON.parse(raw) as Account[]);
     } catch { /* ignora json inválido */ }
     return seedAccounts();
   });
@@ -152,6 +202,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email: mail,
         password: data.password,
         phone: data.phone,
+        addresses: [],
+        cards: [],
+        notifications: { ...DEFAULT_NOTIFICATIONS },
       };
     }
     setAccounts((prev) => [...prev, acc]);

@@ -229,22 +229,80 @@
   font-size: 12px;
   color: var(--rv-text-muted);
 }
-.auth__demo-title { font-weight: 700; color: var(--rv-navy); margin-bottom: 6px; }
-.auth__demo-btns { display: flex; gap: var(--rv-space-1); flex-wrap: wrap; }
-.auth__demo-btn {
-  flex: 1;
-  min-width: 130px;
+.auth__demo-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rv-space-1);
+}
+.auth__demo-title { font-weight: 700; color: var(--rv-navy); }
+.auth__demo-toggle {
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: var(--rv-font);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--rv-navy);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.auth__demo-hint { margin: 6px 0 8px; line-height: 1.4; }
+
+.auth__demo-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+.auth__demo-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
   padding: 8px 10px;
   border: 1px solid #C7D2FE;
   border-radius: var(--rv-radius);
   background: var(--rv-white);
   font-family: var(--rv-font);
-  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.auth__demo-item:hover { background: rgba(30, 58, 138, 0.06); }
+.auth__demo-item.is-selected { border-color: var(--rv-navy); background: rgba(30, 58, 138, 0.08); }
+
+.auth__demo-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--rv-navy);
-  cursor: pointer;
 }
-.auth__demo-btn:hover { background: rgba(30, 58, 138, 0.06); }
+.auth__demo-tag {
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(30, 58, 138, 0.1);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.auth__demo-note { font-size: 11px; color: var(--rv-text-muted); line-height: 1.35; }
+.auth__demo-creds { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.auth__demo-creds code {
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(30, 58, 138, 0.07);
+  font-size: 11px;
+  color: var(--rv-text);
+  word-break: break-all;
+}
 
 /* Pie de página */
 .auth__footer {

@@ -1,8 +1,12 @@
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../components/AdminLayout';
 import { stats } from '../data/dashboardData';
 import { calendarEvents, calendarHours } from '../data/adminData';
 import { useStore } from '../store/StoreContext';
 import { useAuth } from '../auth/AuthContext';
+import { belongsToBusiness } from '../data/businesses';
+import { payStatusLabel } from '../data/payments';
+import { todayISO } from '../utils/datetime';
 import '../styles/variables.css';
 import './AdminDashboard.css';
 
@@ -10,15 +14,19 @@ const statusLabel = { pendiente: 'Pendiente', confirmada: 'Confirmada', cancelad
 
 // Pantalla 12/20 — Panel Administrador (Dashboard)
 export default function AdminDashboard() {
+  const navigate = useNavigate();
   const { reservations, acceptReservation, cancelReservation } = useStore();
   const { user } = useAuth();
   const bizId = user?.businessId;
   const bizName = user?.name;
 
-  // Solo las reservas de ESTE negocio (aislamiento por negocio).
-  const mine = reservations.filter((r) => !bizId || r.serviceId === bizId);
+  // Solo las reservas de ESTE negocio (incluye sus cuartos de hotel).
+  const mine = reservations.filter((r) => belongsToBusiness(r.serviceId, bizId));
+  // Lo que hay que atender: las pendientes y las que aún no ocurren.
+  // El historial completo se consulta en Reportes.
+  const hoy = todayISO();
   const active = mine
-    .filter((r) => r.status !== 'cancelada')
+    .filter((r) => r.status !== 'cancelada' && (r.status === 'pendiente' || r.date >= hoy))
     .sort((a, b) => (a.status === 'pendiente' ? -1 : 1) - (b.status === 'pendiente' ? -1 : 1));
   const pendingCount = mine.filter((r) => r.status === 'pendiente').length;
 
@@ -36,7 +44,12 @@ export default function AdminDashboard() {
     <AdminLayout>
       <header className="ad__header">
         <h1 className="ad__title">Dashboard</h1>
-        <button className="ad__btn ad__btn--ghost">Hoy ▾</button>
+        <div className="ad__header-actions">
+          <button className="ad__btn ad__btn--ghost">Hoy ▾</button>
+          <button className="ad__btn" onClick={() => navigate('/admin/reportes')}>
+            📊 Ver reportes
+          </button>
+        </div>
       </header>
 
       {/* Tarjetas de estadísticas */}
@@ -87,6 +100,19 @@ export default function AdminDashboard() {
                 <div className="ad__res-info">
                   <span className="ad__res-client">{r.customerName}</span>
                   <span className="ad__res-service">{r.serviceName}</span>
+                  {/* Detalle según el tipo de reserva del negocio */}
+                  <span className="ad__res-extra">
+                    {r.mode === 'dia' && `Check-out ${r.checkOutLabel ?? '—'} · ${r.nights ?? 1} ${(r.nights ?? 1) === 1 ? 'noche' : 'noches'} · ${r.people ?? 1} pers.`}
+                    {r.mode === 'mesa' && `${r.tableLabel ?? 'Mesa por asignar'} · ${r.people ?? 1} pers.`}
+                    {r.mode === 'cupo' && `${r.people ?? 1} ${(r.people ?? 1) === 1 ? 'lugar' : 'lugares'}`}
+                    {r.mode === 'evento' && `Salón completo · ${r.people ?? 1} invitados`}
+                  </span>
+                  {/* Cobro: quien paga en el lugar queda pendiente */}
+                  {r.payStatus && (
+                    <span className={`ad__res-pay ad__res-pay--${r.payStatus}`}>
+                      {payStatusLabel[r.payStatus]}{r.total ? ` · $${r.total}` : ''}
+                    </span>
+                  )}
                 </div>
                 <span className={`ad__res-badge ad__res-badge--${r.status}`}>
                   {statusLabel[r.status]}

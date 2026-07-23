@@ -107,9 +107,29 @@
 .am__chat-head {
   padding: var(--rv-space-2);
   border-bottom: 1px solid #E5E7EB;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rv-space-2);
 }
 .am__chat-name { margin: 0; font-size: 16px; font-weight: 700; color: var(--rv-navy); }
 .am__chat-context { margin: 2px 0 0; font-size: 12px; color: var(--rv-text-muted); }
+.am__wa-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #25D366;
+  background: #E7F9EE;
+  color: #128C3E;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-family: var(--rv-font);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.am__wa-btn:hover { background: #d7f5e2; }
 
 .am__messages {
   flex: 1;

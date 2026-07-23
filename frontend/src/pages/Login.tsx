@@ -2,17 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import type { Role } from '../auth/AuthContext';
+import { demoAccounts } from '../data/demoAccounts';
+import type { DemoAccount } from '../data/demoAccounts';
 import '../styles/variables.css';
 import './Auth.css';
 
 // Correo con formato válido: algo@algo.dominio
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-// Cuentas de prueba (para poder demostrar el login sin backend).
-const DEMO = {
-  customer: { email: 'olaf.andrade@correo.com', password: '123456' },
-  admin: { email: 'contacto@barberiaelite.com', password: 'admin123' },
-};
 
 // Pantalla 2/20 — Inicio de Sesión
 export default function Login() {
@@ -24,6 +20,10 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [alert, setAlert] = useState<string | null>(null);
+  const [showDemo, setShowDemo] = useState(true);
+
+  // Cuentas de prueba del tipo seleccionado (cliente o negocio).
+  const demoList = demoAccounts.filter((a) => a.role === role);
 
   const validate = () => {
     const e: { email?: string; password?: string } = {};
@@ -47,10 +47,10 @@ export default function Login() {
     navigate(role === 'admin' ? '/admin' : '/');
   };
 
-  const fillDemo = () => {
-    const creds = DEMO[role];
-    setEmail(creds.email);
-    setPassword(creds.password);
+  // Rellena el formulario con la cuenta de prueba elegida (no inicia sesión solo).
+  const fillDemo = (acc: DemoAccount) => {
+    setEmail(acc.email);
+    setPassword(acc.password);
     setErrors({});
     setAlert(null);
   };
@@ -82,14 +82,50 @@ export default function Login() {
           </button>
         </div>
 
-        {/* Cuentas de prueba */}
+        {/* Cuadro de cuentas de prueba: toca una para llenar el formulario */}
         <div className="auth__demo">
-          <div className="auth__demo-title">Cuenta de prueba ({role === 'admin' ? 'negocio' : 'cliente'})</div>
-          <div className="auth__demo-btns">
-            <button type="button" className="auth__demo-btn" onClick={fillDemo}>
-              Usar cuenta demo
+          <div className="auth__demo-head">
+            <span className="auth__demo-title">
+              🔑 Cuentas de prueba ({role === 'admin' ? 'negocios' : 'clientes'})
+            </span>
+            <button
+              type="button"
+              className="auth__demo-toggle"
+              onClick={() => setShowDemo((v) => !v)}
+            >
+              {showDemo ? 'Ocultar' : 'Mostrar'}
             </button>
           </div>
+
+          {showDemo && (
+            <>
+              <p className="auth__demo-hint">
+                Toca una cuenta para copiar sus datos al formulario y después presiona
+                {role === 'admin' ? ' "Entrar al panel"' : ' "Ingresar"'}.
+              </p>
+              <ul className="auth__demo-list">
+                {demoList.map((acc) => (
+                  <li key={acc.email}>
+                    <button
+                      type="button"
+                      className={`auth__demo-item ${email === acc.email ? 'is-selected' : ''}`}
+                      onClick={() => fillDemo(acc)}
+                    >
+                      <span className="auth__demo-name">
+                        {acc.name}
+                        {acc.mode && <span className="auth__demo-tag">{acc.mode}</span>}
+                      </span>
+                      <span className="auth__demo-note">{acc.note}</span>
+                      <span className="auth__demo-creds">
+                        <code>{acc.email}</code>
+                        <code>{acc.password}</code>
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
 
         {alert && <div className="auth__alert">⚠ {alert}</div>}

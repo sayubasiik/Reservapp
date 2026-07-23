@@ -166,6 +166,145 @@
 .ac__event--cancelada  { background: #FEF2F2; border-color: var(--rv-red); }
 .ac__event--cancelada .ac__event-client { text-decoration: line-through; color: var(--rv-red); }
 
+/* Barra de rango (navegación anterior/hoy/siguiente) */
+.ac__rangebar {
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-1);
+  margin-bottom: var(--rv-space-2);
+}
+.ac__range-nav {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #E5E7EB;
+  background: var(--rv-white);
+  border-radius: 8px;
+  color: var(--rv-navy);
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
+}
+.ac__range-nav:hover { background: var(--rv-bg); }
+.ac__range-label { font-size: 15px; font-weight: 700; color: var(--rv-navy); min-width: 180px; }
+.ac__today-btn {
+  margin-left: auto;
+  border: 1px solid #E5E7EB;
+  background: var(--rv-white);
+  color: var(--rv-navy);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-family: var(--rv-font);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ac__today-btn:hover { background: var(--rv-bg); }
+
+/* Mini calendario interactivo */
+.ac__mini-cell--btn {
+  border: none;
+  background: none;
+  font-family: var(--rv-font);
+  cursor: pointer;
+  position: relative;
+}
+.ac__mini-cell--btn:hover { background: var(--rv-cat-blue); }
+.ac__mini-cell.is-selected { background: var(--rv-navy); color: var(--rv-white); font-weight: 800; }
+.ac__mini-cell.is-selected.is-today { color: var(--rv-white); border-color: var(--rv-white); }
+.ac__mini-dot {
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--rv-amber);
+}
+.ac__mini-cell.is-selected .ac__mini-dot { background: var(--rv-white); }
+
+/* Celda de horario: apila varios eventos */
+.ac__slot-cell { display: flex; flex-direction: column; gap: 4px; }
+.ac__col-head.is-today-col .ac__col-date { color: var(--rv-navy); }
+.ac__col-head.is-today-col { background: var(--rv-cat-blue); }
+
+/* Vista de mes */
+.ac__month {
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius-lg);
+  padding: var(--rv-space-2);
+  flex: 1;
+}
+.ac__month-head, .ac__month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.ac__month-dayname { text-align: center; font-size: 12px; font-weight: 700; color: var(--rv-text-light); padding: 4px 0; }
+.ac__month-cell {
+  min-height: 72px;
+  border: 1px solid #F0F1F4;
+  border-radius: 8px;
+  background: var(--rv-white);
+  padding: 6px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--rv-font);
+}
+.ac__month-cell:hover { background: var(--rv-bg); }
+.ac__month-cell.is-empty { border: none; background: transparent; cursor: default; }
+.ac__month-cell.is-today { border-color: var(--rv-navy); border-width: 2px; }
+.ac__month-num { font-size: 13px; font-weight: 700; color: var(--rv-text); }
+.ac__month-count {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--rv-navy);
+  background: var(--rv-cat-blue);
+  border-radius: 6px;
+  padding: 2px 4px;
+  text-align: center;
+}
+
+/* Modal nueva reserva */
+.ac__new-hint { margin: 0 0 var(--rv-space-2); font-size: 14px; color: var(--rv-text-muted); }
+.ac__slot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+
+/* Selector de personas (mesa, cupo, huéspedes) */
+.ac__people { display: flex; align-items: center; gap: var(--rv-space-1); }
+.ac__people-btn {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 8px;
+  background: var(--rv-navy);
+  color: var(--rv-white);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ac__people-btn:hover { background: var(--rv-navy-dark); }
+.ac__people-value {
+  min-width: 40px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--rv-text);
+}
+.ac__slot-pick {
+  padding: 10px 6px;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  background: var(--rv-white);
+  font-family: var(--rv-font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rv-text);
+  cursor: pointer;
+}
+.ac__slot-pick:hover:not(:disabled) { border-color: var(--rv-navy); }
+.ac__slot-pick.is-selected { background: var(--rv-navy); color: var(--rv-white); border-color: var(--rv-navy); }
+.ac__slot-pick:disabled { opacity: 0.4; cursor: not-allowed; }
+
 /* ---- Responsive: side a la izquierda en desktop ---- */
 @media (min-width: 1100px) {
   .ac__layout { flex-direction: row; align-items: flex-start; }

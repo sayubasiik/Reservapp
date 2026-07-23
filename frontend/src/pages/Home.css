@@ -84,7 +84,17 @@
   font-weight: 700;
   color: var(--rv-text);
 }
-.home__link { color: var(--rv-navy); font-size: 14px; text-decoration: none; }
+.home__link {
+  color: var(--rv-navy);
+  font-size: 14px;
+  text-decoration: none;
+  background: none;
+  border: none;
+  font-family: var(--rv-font);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
 .home__link:hover { text-decoration: underline; }
 
 /* ---- Categorías: scroll horizontal en móvil ---- */

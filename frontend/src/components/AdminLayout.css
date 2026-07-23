@@ -133,6 +133,13 @@
   color: var(--rv-text);
 }
 
+/* Grupo de botones del encabezado */
+.ad__header-actions {
+  display: flex;
+  gap: var(--rv-space-1);
+  flex-wrap: wrap;
+}
+
 /* Botón primario navy reutilizable en el panel */
 .ad__btn {
   background: var(--rv-navy);

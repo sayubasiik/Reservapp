@@ -4,59 +4,58 @@ import Navbar from '../components/Navbar';
 import BookingSteps from '../components/BookingSteps';
 import { serviceDetails } from '../data/serviceDetailData';
 import { TIME_SLOTS } from '../data/slots';
+import { bookingSteps, bookingStep } from '../data/bookingModes';
 import { useStore } from '../store/StoreContext';
+import { formatDateLabel, slotHasPassed } from '../utils/datetime';
 import '../styles/variables.css';
 import './TimeSelect.css';
 
-const MONTH_NAMES = [
-  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
-];
-
-function formatDate(dateStr: string): string {
-  const [y, m, d] = dateStr.split('-').map(Number);
-  return `${d} ${MONTH_NAMES[m - 1]} ${y}`;
-}
-
-// Convierte "10:00 AM" a minutos desde medianoche, para comparar con la hora actual.
-function slotToMinutes(slot: string): number {
-  const m = slot.match(/(\d+):(\d+)\s*(AM|PM)/i);
-  if (!m) return 0;
-  let h = Number(m[1]);
-  const min = Number(m[2]);
-  const pm = /pm/i.test(m[3]);
-  if (h === 12) h = 0;
-  if (pm) h += 12;
-  return h * 60 + min;
-}
-
-// yyyy-mm-dd de hoy en la zona local (para saber si la fecha elegida es hoy).
-function todayISO(): string {
-  const n = new Date();
-  return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
-}
-
 // Pantalla 7/20 — Selección de Horario
+// El significado de "disponible" cambia según el tipo de reserva del negocio:
+// citas por hora (espacios), clases por cupo (lugares) o mesas (nº de mesas libres).
 export default function TimeSelect() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const state = location.state as { date?: string } | null;
+  const state = location.state as { date?: string; people?: number } | null;
   const date = state?.date ?? '';
+  const people = state?.people ?? 1;
   const service = id ? serviceDetails[id] : undefined;
-  const { getAvailable } = useStore();
+  const { getAvailable, getFreeTables, getServiceBooking } = useStore();
 
+  const mode = getServiceBooking(id ?? '').mode;
   const [selected, setSelected] = useState<string | null>(null);
 
-  // Si la reserva es para hoy, los horarios que ya pasaron no se pueden elegir.
-  const isToday = date === todayISO();
-  const nowMinutes = new Date().getHours() * 60 + new Date().getMinutes();
-  const hasPassed = (slot: string) => isToday && slotToMinutes(slot) <= nowMinutes;
+  // Espacios libres del horario según el tipo de reserva.
+  const freeAt = (slot: string): number => {
+    if (!id || !date) return 0;
+    if (mode === 'mesa') return getFreeTables(id, date, slot, people).length;
+    return getAvailable(id, date, slot);
+  };
+
+  // Cuántos espacios necesita esta reserva.
+  const needed = mode === 'cupo' ? people : 1;
+
+  const tagFor = (free: number, passed: boolean) => {
+    if (passed) return 'Ya pasó';
+    if (free < needed) return mode === 'mesa' ? 'Sin mesas' : 'Ocupado';
+    if (mode === 'mesa') return `${free} ${free === 1 ? 'mesa' : 'mesas'}`;
+    if (mode === 'evento') return 'Turno libre';
+    return `${free} ${free === 1 ? 'lugar' : 'lugares'}`;
+  };
+
+  const subtitle = [
+    service?.name ?? 'Servicio',
+    date ? formatDateLabel(date) : '',
+    mode === 'mesa' ? `mesa para ${people} ${people === 1 ? 'persona' : 'personas'}` : '',
+    mode === 'cupo' ? `${people} ${people === 1 ? 'lugar' : 'lugares'}` : '',
+    mode === 'evento' ? `${people} ${people === 1 ? 'invitado' : 'invitados'}` : '',
+  ].filter(Boolean).join(' — ');
 
   const handleConfirm = () => {
     if (selected) {
       navigate(`/reservar/${id}/confirmar`, {
-        state: { date, time: selected },
+        state: { date, time: selected, people },
       });
     }
   };
@@ -66,21 +65,20 @@ export default function TimeSelect() {
       <Navbar active="Reservas" />
 
       <main className="ts__container">
-        <BookingSteps current={3} />
+        <BookingSteps current={bookingStep(mode, 'horario')} steps={bookingSteps(mode)} />
 
         <div className="ts__card">
-          <h1 className="ts__title">Selecciona un horario</h1>
-          <p className="ts__subtitle">
-            {service?.name ?? 'Servicio'} — {date ? formatDate(date) : ''}
-          </p>
+          <h1 className="ts__title">
+            {mode === 'evento' ? 'Selecciona el turno de tu evento' : 'Selecciona un horario'}
+          </h1>
+          <p className="ts__subtitle">{subtitle}</p>
 
           {/* Grid de horarios (los espacios disponibles vienen del negocio) */}
           <div className="ts__grid">
             {TIME_SLOTS.map((slot) => {
-              const passed = hasPassed(slot);
-              const available = id && date ? getAvailable(id, date, slot) : 0;
-              const occupied = available <= 0;
-              const disabled = occupied || passed;
+              const passed = slotHasPassed(date, slot);
+              const free = freeAt(slot);
+              const disabled = passed || free < needed;
               return (
                 <button
                   key={slot}
@@ -89,9 +87,7 @@ export default function TimeSelect() {
                   onClick={() => !disabled && setSelected(slot)}
                 >
                   <span className="ts__slot-time">{slot}</span>
-                  <span className="ts__slot-tag">
-                    {passed ? 'Ya pasó' : occupied ? 'Ocupado' : `${available} ${available === 1 ? 'lugar' : 'lugares'}`}
-                  </span>
+                  <span className="ts__slot-tag">{tagFor(free, passed)}</span>
                 </button>
               );
             })}
@@ -109,7 +105,7 @@ export default function TimeSelect() {
             disabled={!selected}
             onClick={handleConfirm}
           >
-            Confirmar horario
+            {mode === 'evento' ? 'Confirmar turno' : 'Confirmar horario'}
           </button>
         </div>
       </main>

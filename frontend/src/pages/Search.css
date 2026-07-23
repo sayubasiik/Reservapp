@@ -100,6 +100,17 @@
 }
 .se__chip-x { color: var(--rv-text-light); font-size: 11px; }
 
+/* ---- Sin resultados ---- */
+.se__empty {
+  background: var(--rv-white);
+  border: 1px dashed #D1D5DB;
+  border-radius: var(--rv-radius-lg);
+  padding: var(--rv-space-3);
+  text-align: center;
+  color: var(--rv-text-muted);
+  font-size: 14px;
+}
+
 /* ---- Resultados ---- */
 .se__results {
   display: flex;

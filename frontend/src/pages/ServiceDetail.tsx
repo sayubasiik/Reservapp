@@ -3,14 +3,26 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { serviceDetails } from '../data/serviceDetailData';
 import type { Review } from '../types';
+import { useStore } from '../store/StoreContext';
+import { businessIdForService } from '../data/businesses';
+import { waLink } from '../utils/whatsapp';
 import '../styles/variables.css';
 import './ServiceDetail.css';
+
+// Convierte un usuario/URL en un enlace absoluto a la red social.
+function socialUrl(base: string, value: string): string {
+  const v = value.trim();
+  if (/^https?:\/\//i.test(v)) return v;
+  return `https://${base}/${v.replace(/^@/, '')}`;
+}
 
 // Pantalla 5/12 — Detalle del Servicio
 export default function ServiceDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { getProfile } = useStore();
   const service = id ? serviceDetails[id] : undefined;
+  const profile = id ? getProfile(businessIdForService(id)) : {};
 
   // Usuario actual (vendría del AuthContext)
   const userName = 'Olaf A.';
@@ -77,6 +89,21 @@ export default function ServiceDetail() {
           <p className="sd__address">
             <span className="sd__address-icon">📍</span> {service.address}
           </p>
+
+          {/* Redes sociales del negocio (si el admin las configuró) */}
+          {(profile.instagram || profile.facebook || profile.whatsapp) && (
+            <div className="sd__social">
+              {profile.instagram && (
+                <a className="sd__social-link" href={socialUrl('instagram.com', profile.instagram)} target="_blank" rel="noopener noreferrer">📷 Instagram</a>
+              )}
+              {profile.facebook && (
+                <a className="sd__social-link" href={socialUrl('facebook.com', profile.facebook)} target="_blank" rel="noopener noreferrer">📘 Facebook</a>
+              )}
+              {profile.whatsapp && (
+                <a className="sd__social-link" href={waLink(profile.whatsapp)} target="_blank" rel="noopener noreferrer">🟢 WhatsApp</a>
+              )}
+            </div>
+          )}
         </section>
 
         {/* Descripción */}

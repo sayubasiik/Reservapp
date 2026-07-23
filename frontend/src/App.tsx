@@ -17,6 +17,7 @@ import BookingSuccess from './pages/BookingSuccess';
 import MyReservations from './pages/MyReservations';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminCalendar from './pages/AdminCalendar';
+import AdminReports from './pages/AdminReports';
 import AdminClients from './pages/AdminClients';
 import AdminGallery from './pages/AdminGallery';
 import AdminMessages from './pages/AdminMessages';
@@ -48,6 +49,7 @@ export default function App() {
         {/* Panel del negocio (requiere rol admin) */}
         <Route path="/admin" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
         <Route path="/admin/calendario" element={<RequireAdmin><AdminCalendar /></RequireAdmin>} />
+        <Route path="/admin/reportes" element={<RequireAdmin><AdminReports /></RequireAdmin>} />
         <Route path="/admin/clientes" element={<RequireAdmin><AdminClients /></RequireAdmin>} />
         <Route path="/admin/galeria" element={<RequireAdmin><AdminGallery /></RequireAdmin>} />
         <Route path="/admin/mensajes" element={<RequireAdmin><AdminMessages /></RequireAdmin>} />

@@ -121,6 +121,21 @@
 .ad__res-info { flex: 1; min-width: 120px; display: flex; flex-direction: column; }
 .ad__res-client { font-size: 14px; font-weight: 700; color: var(--rv-text); }
 .ad__res-service { font-size: 12px; color: var(--rv-text-muted); }
+.ad__res-extra:not(:empty) {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--rv-navy);
+}
+
+/* Estado del cobro de la reserva */
+.ad__res-pay {
+  align-self: flex-start;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.ad__res-pay--pagado { color: var(--rv-green); }
+.ad__res-pay--pendiente { color: #B45309; }
 
 .ad__res-badge {
   padding: 5px 12px;

@@ -1,13 +1,15 @@
 import './BookingSteps.css';
 
-const steps = ['Servicio', 'Fecha', 'Horario', 'Confirmar', 'Pago'];
+const DEFAULT_STEPS = ['Servicio', 'Fecha', 'Horario', 'Confirmar', 'Pago'];
 
 interface BookingStepsProps {
-  /** Paso activo (1-5) */
+  /** Paso activo (1 = primero) */
   current: number;
+  /** Etiquetas del flujo; las reservas por día usan un paso menos */
+  steps?: string[];
 }
 
-export default function BookingSteps({ current }: BookingStepsProps) {
+export default function BookingSteps({ current, steps = DEFAULT_STEPS }: BookingStepsProps) {
   return (
     <div className="bs">
       {/* Barra de progreso */}

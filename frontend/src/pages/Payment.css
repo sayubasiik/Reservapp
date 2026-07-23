@@ -144,6 +144,28 @@
   flex-shrink: 0;
 }
 
+/* ---- Aviso de pago en el lugar ---- */
+.py__pending {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--rv-space-2);
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  border-radius: var(--rv-radius);
+  margin-bottom: var(--rv-space-3);
+}
+.py__pending-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #B45309;
+}
+.py__pending-text {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--rv-text-muted);
+}
+
 /* ---- Botón pagar ---- */
 .py__pay-btn {
   display: block;

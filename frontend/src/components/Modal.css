@@ -1,0 +1,97 @@
+/* Cuadro modal reutilizable */
+.rv-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--rv-space-2);
+  z-index: 1000;
+  animation: rv-modal-fade 0.15s ease;
+}
+@keyframes rv-modal-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.rv-modal__box {
+  width: 100%;
+  background: var(--rv-white);
+  border-radius: var(--rv-radius-lg);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: rv-modal-pop 0.15s ease;
+}
+@keyframes rv-modal-pop { from { transform: translateY(8px) scale(0.98); } to { transform: none; } }
+
+.rv-modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rv-space-2);
+  padding: var(--rv-space-2) var(--rv-space-3);
+  border-bottom: 1px solid #E5E7EB;
+}
+.rv-modal__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--rv-navy);
+}
+.rv-modal__close {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  color: var(--rv-text-muted);
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+}
+.rv-modal__close:hover { color: var(--rv-text); }
+
+.rv-modal__body {
+  padding: var(--rv-space-3);
+  overflow-y: auto;
+}
+
+/* ---- Utilidades de formulario reutilizables dentro de modales ---- */
+.rv-form-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--rv-space-2); }
+.rv-form-label { font-size: 13px; font-weight: 700; color: var(--rv-navy); }
+.rv-form-input {
+  padding: 12px var(--rv-space-2);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  font-family: var(--rv-font);
+  font-size: 14px;
+  color: var(--rv-text);
+  outline: none;
+  width: 100%;
+}
+.rv-form-input:focus { border-color: var(--rv-navy); }
+.rv-form-input.has-error { border-color: var(--rv-red); }
+.rv-form-error { font-size: 12px; color: var(--rv-red); }
+.rv-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--rv-space-2);
+  margin-top: var(--rv-space-2);
+}
+.rv-btn {
+  padding: 11px var(--rv-space-3);
+  border-radius: var(--rv-radius);
+  border: none;
+  background: var(--rv-navy);
+  color: var(--rv-white);
+  font-family: var(--rv-font);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.rv-btn:hover { background: var(--rv-navy-dark); }
+.rv-btn--ghost {
+  background: var(--rv-white);
+  color: var(--rv-navy);
+  border: 1px solid #E5E7EB;
+}
+.rv-btn--ghost:hover { background: var(--rv-bg); }

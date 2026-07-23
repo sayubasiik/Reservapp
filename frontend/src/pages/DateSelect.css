@@ -31,6 +31,22 @@
   text-align: center;
 }
 
+.ds__subtitle {
+  margin: calc(-1 * var(--rv-space-1)) 0 var(--rv-space-2);
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--rv-navy);
+}
+
+.ds__hint {
+  margin: 0 0 var(--rv-space-2);
+  text-align: center;
+  font-size: 13px;
+  color: var(--rv-text-muted);
+  line-height: 1.5;
+}
+
 /* ---- Navegación de mes ---- */
 .ds__month-nav {
   display: flex;
@@ -84,6 +100,7 @@
 }
 
 .ds__cell {
+  position: relative;
   aspect-ratio: 1;
   display: flex;
   align-items: center;
@@ -146,6 +163,117 @@
   border-radius: 50%;
   background: var(--rv-navy);
   flex-shrink: 0;
+}
+
+/* Días intermedios de una estancia (check-in → check-out) */
+.ds__cell.is-in-range {
+  background: rgba(30, 58, 138, 0.08);
+  border-radius: var(--rv-radius);
+  color: var(--rv-navy);
+}
+
+/* Etiqueta "Entrada" / "Salida" bajo el día elegido */
+.ds__cell-tag {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--rv-navy);
+}
+
+.ds__clear {
+  margin-left: var(--rv-space-1);
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: var(--rv-font);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rv-navy);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---- Nº de personas (mesa / cupo) ---- */
+.ds__people {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--rv-space-2);
+  padding: 14px var(--rv-space-2);
+  margin-bottom: var(--rv-space-2);
+  background: var(--rv-bg);
+  border-radius: var(--rv-radius);
+}
+.ds__people-label { font-size: 14px; font-weight: 700; color: var(--rv-text); }
+.ds__people-max { font-size: 12px; color: var(--rv-text-muted); }
+
+.ds__stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-1);
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  padding: 4px 6px;
+}
+.ds__step {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background: var(--rv-navy);
+  color: var(--rv-white);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ds__step:hover { background: var(--rv-navy-dark); }
+.ds__step-value {
+  min-width: 34px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--rv-text);
+}
+
+/* ---- Total estimado y disponibilidad ---- */
+.ds__total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px var(--rv-space-2);
+  margin-bottom: var(--rv-space-1);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  font-size: 14px;
+  color: var(--rv-text);
+}
+.ds__total strong { font-size: 18px; color: var(--rv-navy); }
+
+.ds__avail {
+  margin: 0 0 var(--rv-space-2);
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #15803D;
+}
+
+.ds__error {
+  margin: 0 0 var(--rv-space-2);
+  padding: 10px var(--rv-space-2);
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: var(--rv-radius);
+  font-size: 13px;
+  font-weight: 600;
+  color: #B91C1C;
+  text-align: center;
 }
 
 /* ---- Botón continuar ---- */

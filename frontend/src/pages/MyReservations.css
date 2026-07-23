@@ -9,6 +9,67 @@
   font-family: var(--rv-font);
 }
 
+/* ---- Modal de modificar ---- */
+.mr__edit-service {
+  margin: 0 0 var(--rv-space-2);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--rv-navy);
+}
+.mr__slot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+/* Noches de la estancia al reagendar un hospedaje */
+.mr__edit-nights {
+  margin: calc(-1 * var(--rv-space-1)) 0 var(--rv-space-2);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rv-navy);
+}
+
+/* Selector de personas (mesa, cupo, huéspedes) */
+.mr__people {
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-1);
+}
+.mr__people-btn {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 8px;
+  background: var(--rv-navy);
+  color: var(--rv-white);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.mr__people-btn:hover { background: var(--rv-navy-dark); }
+.mr__people-value {
+  min-width: 40px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--rv-text);
+}
+.mr__slot {
+  padding: 10px 6px;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  background: var(--rv-white);
+  font-family: var(--rv-font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rv-text);
+  cursor: pointer;
+}
+.mr__slot:hover:not(:disabled) { border-color: var(--rv-navy); }
+.mr__slot.is-selected { background: var(--rv-navy); color: var(--rv-white); border-color: var(--rv-navy); }
+.mr__slot:disabled { opacity: 0.4; cursor: not-allowed; }
+
 .mr__container {
   max-width: 1000px;
   margin: 0 auto;

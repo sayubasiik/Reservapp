@@ -2,67 +2,17 @@ import { useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { serviceDetails } from '../data/serviceDetailData';
+import { bookingTotal, priceNote } from '../data/bookingModes';
 import { useStore } from '../store/StoreContext';
 import { useAuth } from '../auth/AuthContext';
+import { luhnValid, formatCardNumber, formatExpiry, expiryValid } from '../utils/card';
+import { formatDateLabel, nightsBetween } from '../utils/datetime';
+import { payMethods, payMethodLabels, payStatusFor } from '../data/payments';
+import type { PayMethod } from '../data/payments';
 import '../styles/variables.css';
 import './Payment.css';
 
-type PayMethod = 'card' | 'paypal' | 'local';
-
-const methodLabels: Record<PayMethod, string> = {
-  card: 'Tarjeta de crédito',
-  paypal: 'PayPal',
-  local: 'Pagar en el lugar',
-};
-
-const MONTH_NAMES = [
-  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
-];
-function formatDate(dateStr: string): string {
-  if (!dateStr) return '';
-  const [y, m, d] = dateStr.split('-').map(Number);
-  return `${d} ${MONTH_NAMES[m - 1]} ${y}`;
-}
-
-// --- Validación de tarjeta ---
-// Algoritmo de Luhn: valida que el número de tarjeta sea plausible.
-function luhnValid(num: string): boolean {
-  const digits = num.replace(/\D/g, '');
-  if (digits.length < 13 || digits.length > 19) return false;
-  let sum = 0;
-  let alt = false;
-  for (let i = digits.length - 1; i >= 0; i--) {
-    let n = Number(digits[i]);
-    if (alt) { n *= 2; if (n > 9) n -= 9; }
-    sum += n;
-    alt = !alt;
-  }
-  return sum % 10 === 0;
-}
-
-// Agrupa el número de tarjeta en bloques de 4: "1234 5678 9012 3456"
-function formatCardNumber(v: string): string {
-  return v.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
-}
-
-// Formatea el vencimiento como MM/AA mientras se escribe.
-function formatExpiry(v: string): string {
-  const d = v.replace(/\D/g, '').slice(0, 4);
-  return d.length <= 2 ? d : `${d.slice(0, 2)}/${d.slice(2)}`;
-}
-
-// El vencimiento (MM/AA) debe ser un mes válido y no estar vencido.
-function expiryValid(v: string): boolean {
-  const m = v.match(/^(\d{2})\/(\d{2})$/);
-  if (!m) return false;
-  const month = Number(m[1]);
-  const year = 2000 + Number(m[2]);
-  if (month < 1 || month > 12) return false;
-  const now = new Date();
-  const lastDay = new Date(year, month, 0); // último día del mes de vencimiento
-  return lastDay >= new Date(now.getFullYear(), now.getMonth(), now.getDate());
-}
+const formatDate = formatDateLabel;
 
 type CardErrors = Partial<Record<'number' | 'expiry' | 'cvv' | 'holder', string>>;
 
@@ -71,14 +21,23 @@ export default function Payment() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const state = location.state as { date?: string; time?: string } | null;
+  const state = location.state as
+    { date?: string; time?: string; checkOut?: string; people?: number } | null;
   const service = id ? serviceDetails[id] : undefined;
 
   const [method, setMethod] = useState<PayMethod>('card');
   const [card, setCard] = useState({ number: '', expiry: '', cvv: '', holder: '' });
   const [cardErrors, setCardErrors] = useState<CardErrors>({});
-  const { book } = useStore();
+  const { book, getServiceBooking } = useStore();
   const { user } = useAuth();
+
+  const cfg = getServiceBooking(id ?? '');
+  const mode = cfg.mode;
+  const date = state?.date ?? '';
+  const checkOut = state?.checkOut ?? '';
+  const people = state?.people ?? 1;
+  const time = state?.time ?? (mode === 'dia' ? cfg.checkInTime : '');
+  const nights = mode === 'dia' ? nightsBetween(date, checkOut) : 0;
 
   if (!service) {
     return (
@@ -99,14 +58,17 @@ export default function Payment() {
     return Object.keys(e).length === 0;
   };
 
+  const total = bookingTotal(mode, service.price, { nights, people });
+  // Pagar en el lugar no cobra nada ahora: la reserva queda con pago pendiente.
+  const payStatus = payStatusFor(method);
+  const payLater = payStatus === 'pendiente';
+
   const handlePay = () => {
     // Si paga con tarjeta, valida los datos antes de continuar.
     if (method === 'card' && !validateCard()) return;
 
-    const date = state?.date ?? '';
-    const time = state?.time ?? '';
     // Registra la reserva (queda pendiente hasta que el negocio la acepte).
-    // book() devuelve false si el horario ya se llenó.
+    // book() devuelve false si ya no queda espacio, habitación o mesa.
     const ok = book({
       serviceId: service.id,
       serviceName: service.name,
@@ -116,13 +78,35 @@ export default function Payment() {
       dateLabel: formatDate(date),
       time,
       customerName: user?.name ?? 'Cliente',
+      mode,
+      people,
+      total,
+      payMethod: method,
+      payStatus,
+      ...(mode === 'dia' && {
+        checkOut,
+        checkOutLabel: formatDate(checkOut),
+        checkOutTime: cfg.checkOutTime,
+        nights,
+      }),
     });
+
     if (!ok) {
-      alert('Lo sentimos, ese horario se acaba de llenar. Elige otro.');
-      navigate(`/reservar/${id}/horario`, { state: { date } });
+      if (mode === 'dia') {
+        alert('Lo sentimos, ya no hay habitaciones libres en esas fechas. Elige otras.');
+        navigate(`/reservar/${id}/fecha`);
+      } else if (mode === 'mesa') {
+        alert(`Lo sentimos, ya no hay mesas para ${people} personas en ese horario. Elige otro.`);
+        navigate(`/reservar/${id}/horario`, { state: { date, people } });
+      } else {
+        alert(mode === 'evento'
+          ? 'Lo sentimos, ese turno se acaba de apartar. Elige otro.'
+          : 'Lo sentimos, ese horario se acaba de llenar. Elige otro.');
+        navigate(`/reservar/${id}/horario`, { state: { date, people } });
+      }
       return;
     }
-    navigate(`/reservar/${id}/exito`, { state: { date, time } });
+    navigate(`/reservar/${id}/exito`, { state: { date, time, checkOut, people } });
   };
 
   return (
@@ -137,13 +121,13 @@ export default function Payment() {
 
             {/* Selector de método */}
             <div className="py__methods">
-              {(Object.keys(methodLabels) as PayMethod[]).map((m) => (
+              {payMethods.map((m) => (
                 <label
                   key={m}
                   className={`py__method ${method === m ? 'is-selected' : ''}`}
                 >
                   <span className="py__method-dot" />
-                  <span className="py__method-label">{methodLabels[m]}</span>
+                  <span className="py__method-label">{payMethodLabels[m]}</span>
                   <input
                     type="radio"
                     name="method"
@@ -213,15 +197,27 @@ export default function Payment() {
               </div>
             )}
 
-            {/* Badge SSL */}
-            <div className="py__ssl">
-              <span className="py__ssl-dot" />
-              Pago seguro y cifrado con SSL
-            </div>
+            {/* Aviso de pago en el lugar / badge SSL */}
+            {payLater ? (
+              <div className="py__pending">
+                <span className="py__pending-title">Pago pendiente</span>
+                <span className="py__pending-text">
+                  No se te cobra nada ahora. Pagarás ${total} directamente en el
+                  negocio; tu reserva queda registrada con el pago pendiente.
+                </span>
+              </div>
+            ) : (
+              <div className="py__ssl">
+                <span className="py__ssl-dot" />
+                Pago seguro y cifrado con SSL
+              </div>
+            )}
 
-            {/* Botón pagar */}
+            {/* Botón de confirmar: solo cobra si el pago es en línea */}
             <button className="py__pay-btn" onClick={handlePay}>
-              Pagar ahora — ${service.price}
+              {payLater
+                ? `Confirmar reserva — pago pendiente $${total}`
+                : `Pagar ahora — $${total}`}
             </button>
           </div>
 
@@ -236,22 +232,44 @@ export default function Payment() {
               />
               <div className="py__summary-info">
                 <span className="py__summary-name">{service.name}</span>
-                <span className="py__summary-desc">Corte profesional</span>
+                <span className="py__summary-desc">
+                  {mode === 'dia'
+                    ? `${formatDate(date)} → ${formatDate(checkOut)}`
+                    : `${formatDate(date)} · ${time}`}
+                </span>
+                {mode === 'dia' && (
+                  <span className="py__summary-desc">
+                    {nights} {nights === 1 ? 'noche' : 'noches'} · {people} {people === 1 ? 'huésped' : 'huéspedes'}
+                  </span>
+                )}
+                {mode === 'mesa' && (
+                  <span className="py__summary-desc">Mesa para {people} {people === 1 ? 'persona' : 'personas'}</span>
+                )}
+                {mode === 'cupo' && (
+                  <span className="py__summary-desc">{people} {people === 1 ? 'lugar' : 'lugares'}</span>
+                )}
+                {mode === 'evento' && (
+                  <span className="py__summary-desc">Salón completo · {people} {people === 1 ? 'invitado' : 'invitados'}</span>
+                )}
               </div>
             </div>
 
             <div className="py__summary-rows">
               <div className="py__summary-row">
-                <span>Subtotal</span>
-                <span>${service.price}</span>
+                <span>
+                  ${service.price} {priceNote(mode)}
+                  {mode === 'dia' && ` × ${nights}`}
+                  {(mode === 'cupo' || mode === 'mesa' || mode === 'evento') && ` × ${people}`}
+                </span>
+                <span>${total}</span>
               </div>
               <div className="py__summary-row">
                 <span>Descuento</span>
                 <span>-$0</span>
               </div>
               <div className="py__summary-row py__summary-row--total">
-                <span>Total</span>
-                <span>${service.price}</span>
+                <span>{payLater ? 'Total a pagar en el lugar' : 'Total'}</span>
+                <span>${total}</span>
               </div>
             </div>
           </div>

@@ -19,6 +19,13 @@ export const searchResults: SearchResult[] = [
   { id: 'clinica-dental', name: 'Clínica Dental', category: 'Médico',   address: 'Insurgentes Sur 300',     price: 800, rating: 4.7, color: 'amber' },
   { id: 'yoga-studio',    name: 'Yoga Studio',    category: 'Gimnasio', address: 'Polanco, CDMX',           price: 400, rating: 4.9, color: 'green' },
   { id: 'salon-bella',    name: 'Salón Bella Vita', category: 'Belleza', address: 'Condesa, CDMX',           price: 350, rating: 4.5, color: 'blue' },
+  { id: 'terraza',        name: 'Restaurante La Terraza', category: 'Restaurante', address: 'Av. Reforma 222', price: 300, rating: 4.6, color: 'pink' },
+  { id: 'hotel-brisa-sencilla', name: 'Hotel Brisa · Sencilla', category: 'Hotel', address: 'Av. del Mar 100', price: 900,  rating: 4.5, color: 'blue' },
+  { id: 'hotel-brisa-doble',    name: 'Hotel Brisa · Doble',    category: 'Hotel', address: 'Av. del Mar 100', price: 1400, rating: 4.7, color: 'green' },
+  { id: 'hotel-brisa-suite',    name: 'Hotel Brisa · Suite',    category: 'Hotel', address: 'Av. del Mar 100', price: 2500, rating: 4.9, color: 'amber' },
+  { id: 'salon-jardin-cristal', name: 'Salón Jardín Real · Salón Cristal', category: 'Eventos', address: 'Av. de los Fresnos 450', price: 380, rating: 4.8, color: 'pink' },
+  { id: 'salon-jardin-terraza', name: 'Salón Jardín Real · Terraza Jardín', category: 'Eventos', address: 'Av. de los Fresnos 450', price: 450, rating: 4.9, color: 'green' },
+  { id: 'salon-jardin-vip',     name: 'Salón Jardín Real · Sala VIP',      category: 'Eventos', address: 'Av. de los Fresnos 450', price: 300, rating: 4.7, color: 'blue' },
 ];
 
 export const recentSearches = ['Barbería', 'Spa', 'Yoga', 'Dentista'];

@@ -51,7 +51,52 @@
 .ag__media--amber { background: var(--rv-cat-amber); }
 .ag__media--green { background: var(--rv-cat-green); }
 .ag__media--gray  { background: var(--rv-cat-gray); }
+.ag__media:not([class*="ag__media--"]) { background: var(--rv-bg); }
 .ag__thumb { font-size: 28px; opacity: 0.55; }
+.ag__img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Cuadro para subir imagen */
+.ag__upload-box {
+  height: 100%;
+  min-height: 190px;
+  border: 2px dashed #C7CBD3;
+  border-radius: var(--rv-radius-lg);
+  background: var(--rv-white);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  font-family: var(--rv-font);
+  color: var(--rv-navy);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.ag__upload-box:hover { background: var(--rv-cat-blue); border-color: var(--rv-navy); }
+.ag__upload-icon { font-size: 32px; font-weight: 300; line-height: 1; }
+.ag__upload-text { font-size: 14px; font-weight: 700; }
+.ag__upload-hint { font-size: 11px; color: var(--rv-text-muted); }
+
+/* Dropzone del modal */
+.ag__dropzone {
+  width: 100%;
+  min-height: 180px;
+  border: 2px dashed #C7CBD3;
+  border-radius: var(--rv-radius);
+  background: var(--rv-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  padding: var(--rv-space-2);
+}
+.ag__dropzone:hover { border-color: var(--rv-navy); }
+.ag__dropzone-icon { font-size: 34px; opacity: 0.5; }
+.ag__dropzone-text { font-size: 13px; color: var(--rv-text-muted); }
+.ag__dropzone-preview { max-width: 100%; max-height: 240px; border-radius: 8px; object-fit: contain; }
 
 .ag__tools {
   position: absolute;

@@ -27,6 +27,7 @@
   margin-bottom: var(--rv-space-2);
   flex-wrap: wrap;
 }
+.pf__avatar-wrap { position: relative; flex-shrink: 0; }
 .pf__avatar {
   width: 72px;
   height: 72px;
@@ -40,6 +41,26 @@
   font-weight: 800;
   flex-shrink: 0;
 }
+.pf__avatar--img { object-fit: cover; }
+.pf__avatar-btn {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--rv-white);
+  background: var(--rv-navy);
+  color: var(--rv-white);
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.pf__avatar-btn:hover { background: var(--rv-navy-dark); }
+.pf__img-error { margin: 4px 0 0; font-size: 12px; color: var(--rv-red); }
 .pf__ident { flex: 1; min-width: 0; }
 .pf__name {
   margin: 0 0 4px;
@@ -161,6 +182,115 @@
   font-size: 12px;
   padding: var(--rv-space-3) 0;
 }
+
+/* ---- Contenido de los modales del perfil ---- */
+.pf__empty {
+  text-align: center;
+  color: var(--rv-text-muted);
+  font-size: 14px;
+  padding: var(--rv-space-2) 0;
+}
+.pf__add-btn {
+  width: 100%;
+  padding: 12px;
+  border: 1px dashed #C7CBD3;
+  border-radius: var(--rv-radius);
+  background: var(--rv-white);
+  color: var(--rv-navy);
+  font-family: var(--rv-font);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.pf__add-btn:hover { background: var(--rv-bg); }
+.pf__add-form { border-top: 1px solid #F0F1F4; padding-top: var(--rv-space-2); margin-top: var(--rv-space-2); }
+
+/* Tarjetas */
+.pf__cards, .pf__addresses { display: flex; flex-direction: column; gap: var(--rv-space-1); margin-bottom: var(--rv-space-2); }
+.pf__card-row {
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-1);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  padding: 10px var(--rv-space-2);
+}
+.pf__card-brand { font-size: 14px; font-weight: 700; color: var(--rv-navy); flex: 1; }
+.pf__card-num { font-size: 14px; color: var(--rv-text); letter-spacing: 1px; }
+.pf__card-exp { font-size: 13px; color: var(--rv-text-muted); }
+
+/* Direcciones */
+.pf__address-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rv-space-1);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  padding: 10px var(--rv-space-2);
+}
+.pf__address-icon { font-size: 16px; }
+.pf__address-body { flex: 1; display: flex; flex-direction: column; }
+.pf__address-label { font-size: 14px; font-weight: 700; color: var(--rv-navy); }
+.pf__address-text { font-size: 13px; color: var(--rv-text-muted); }
+
+.pf__row-remove {
+  border: 1px solid #FECACA;
+  background: var(--rv-white);
+  color: var(--rv-red);
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.pf__row-remove:hover { background: #FEF2F2; }
+
+/* Toggles de notificaciones */
+.pf__toggles { display: flex; flex-direction: column; }
+.pf__toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rv-space-2);
+  padding: var(--rv-space-2) 0;
+  border-bottom: 1px solid #F0F1F4;
+}
+.pf__toggle-label { font-size: 14px; color: var(--rv-text); }
+.pf__switch {
+  width: 44px;
+  height: 24px;
+  border-radius: 999px;
+  border: none;
+  background: #D1D5DB;
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+.pf__switch.is-on { background: var(--rv-navy); }
+.pf__switch-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--rv-white);
+  transition: transform 0.15s ease;
+}
+.pf__switch.is-on .pf__switch-knob { transform: translateX(20px); }
+
+/* Ayuda y términos */
+.pf__help-lead { margin: 0 0 var(--rv-space-2); font-size: 14px; color: var(--rv-text); }
+.pf__help-list { margin: 0 0 var(--rv-space-3); padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--rv-text); }
+.pf__help-faq-title { margin: 0 0 var(--rv-space-1); font-size: 14px; font-weight: 700; color: var(--rv-navy); }
+.pf__faq { border-bottom: 1px solid #F0F1F4; padding: 8px 0; font-size: 14px; }
+.pf__faq summary { cursor: pointer; font-weight: 600; color: var(--rv-text); }
+.pf__faq p { margin: 8px 0 0; color: var(--rv-text-muted); }
+.pf__terms { font-size: 13px; color: var(--rv-text); display: flex; flex-direction: column; gap: 10px; line-height: 1.5; }
+.pf__terms-foot { color: var(--rv-text-light); font-size: 12px; }
 
 /* ---- Responsive ---- */
 @media (min-width: 768px) {

@@ -138,7 +138,7 @@ export const activeChat = {
 
 /* ---- Configuración (20) ---- */
 export const settingsTabs = [
-  'Perfil del negocio', 'Horarios de atención', 'Notificaciones', 'Métodos de pago', 'Seguridad',
+  'Perfil del negocio', 'Tipo de reservas', 'Horarios de atención', 'Notificaciones', 'Métodos de pago', 'Seguridad',
 ];
 
 export const businessHours = [
