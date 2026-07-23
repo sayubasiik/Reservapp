@@ -1,0 +1,100 @@
+/* ============================================
+   Tarjetas: Categoría y Servicio
+   ============================================ */
+
+/* ---- Tarjeta de categoría ---- */
+.category-card {
+  flex: 0 0 auto;          /* no se encoge: permite el scroll horizontal en móvil */
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-1);
+  padding: var(--rv-space-2);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  background: var(--rv-white);
+  cursor: pointer;
+  font-family: var(--rv-font);
+  transition: transform 0.15s ease;
+}
+.category-card:hover { transform: translateY(-2px); }
+.category-card__icon { font-size: 20px; }
+.category-card__label {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--rv-text);
+}
+
+/* Color de fondo por categoría (clases modificadoras) */
+.category-card--blue  { background: var(--rv-cat-blue); }
+.category-card--pink  { background: var(--rv-cat-pink); }
+.category-card--amber { background: var(--rv-cat-amber); }
+.category-card--green { background: var(--rv-cat-green); }
+.category-card--gray  {
+  background: var(--rv-cat-gray);
+  justify-content: center;
+  min-width: 80px;
+}
+
+/* ---- Tarjeta de servicio ---- */
+.service-card {
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.service-card:hover {
+  box-shadow: 0 8px 20px rgba(30, 58, 138, 0.12);
+  transform: translateY(-2px);
+}
+.service-card__image {
+  position: relative;
+  height: 160px;
+  background-color: #E5E7EB;  /* respaldo si la imagen aún no carga */
+  background-size: cover;
+  background-position: center;
+}
+/* Botón de favorito sobre la imagen */
+.service-card__fav {
+  position: absolute;
+  top: var(--rv-space-1);
+  right: var(--rv-space-1);
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  transition: transform 0.15s ease;
+}
+.service-card__fav:hover { transform: scale(1.1); }
+.service-card__body { padding: var(--rv-space-2); }
+.service-card__name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--rv-text);
+}
+.service-card__price {
+  margin: 4px 0 var(--rv-space-1);
+  font-size: 13px;
+  color: var(--rv-text-muted);
+}
+.service-card__rating {
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-1);
+}
+.service-card__stars {
+  color: var(--rv-amber);
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+.service-card__score { font-size: 13px; color: var(--rv-text-muted); }
