@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.database import Base, engine
-from app.routers import auth, users, resources, reservations
+from app.routers import auth, businesses, reservations, resources, users
 
 # Crear tablas al iniciar (en producción usa Alembic para migraciones)
 Base.metadata.create_all(bind=engine)
@@ -30,6 +30,7 @@ app.add_middleware(
 # Registro de routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Autenticación"])
 app.include_router(users.router, prefix="/api/users", tags=["Usuarios"])
+app.include_router(businesses.router, prefix="/api/businesses",tags=["Negocios"])
 app.include_router(resources.router, prefix="/api/resources", tags=["Recursos"])
 app.include_router(reservations.router, prefix="/api/reservations", tags=["Reservas"])
 

@@ -1,5 +1,5 @@
 """
-Esquemas de validación para Recurso (Pydantic).
+Esquemas de validación para Recurso.
 """
 from decimal import Decimal
 
@@ -20,7 +20,7 @@ class ResourceBase(BaseModel):
 
 
 class ResourceCreate(ResourceBase):
-    pass
+    business_id: int = Field(gt=0)
 
 
 class ResourceUpdate(BaseModel):
@@ -41,4 +41,5 @@ class ResourceOut(ResourceBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    business_id: int | None
     is_active: bool
