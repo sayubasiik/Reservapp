@@ -1,0 +1,51 @@
+# ReservVap — Orquestación completa: frontend + backend + base de datos
+# Levantar todo:   docker compose up --build
+# API:      http://localhost:8000/docs
+# Frontend: http://localhost:5173
+services:
+
+  db:
+    image: postgres:16-alpine
+    container_name: reservvap-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: reservas
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # El backend no arranca hasta que Postgres acepte conexiones
+      test: ["CMD-SHELL", "pg_isready -U postgres -d reservas"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./reservas-api          # usa el Dockerfile que ya tiene el backend
+    container_name: reservvap-api
+    environment:
+      # OJO: dentro de Docker el host es 'db' (nombre del servicio), no localhost
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/reservas
+      SECRET_KEY: cambia-esto-en-produccion-openssl-rand-hex-32
+      ACCESS_TOKEN_EXPIRE_MINUTES: 1440
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build: ./frontend
+    container_name: reservvap-web
+    environment:
+      # URL que el navegador usa para llamar a la API
+      VITE_API_URL: http://localhost:8000/api
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
