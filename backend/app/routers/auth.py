@@ -40,7 +40,8 @@ def login(
     Login con OAuth2 (username = email).
     Devuelve un token JWT para usar en el header: Authorization: Bearer <token>
     """
-    user = db.query(User).filter(User.email == form.username).first()
+    normalized_email = form.username.strip().lower()
+    user = db.query(User).filter(User.email == normalized_email).first()
     if not user or not verify_password(form.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

@@ -1,10 +1,11 @@
 """
 Configuración centralizada. Lee variables de entorno desde .env
 """
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env")
     PROJECT_NAME: str = "API de Reservas"
 
     # Base de datos: local por defecto, en Azure usa la cadena de conexión
@@ -21,9 +22,6 @@ class Settings(BaseSettings):
 
     # CORS: agrega aquí la URL de tu frontend en Azure
     CORS_ORIGINS: list[str] = ["http://localhost:5173", "http://localhost:3000"]
-
-    class Config:
-        env_file = ".env"
 
 
 settings = Settings()

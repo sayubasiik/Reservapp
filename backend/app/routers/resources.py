@@ -30,7 +30,7 @@ def list_resources(
 @router.get("/{resource_id}", response_model=ResourceOut)
 def get_resource(resource_id: int, db: Session = Depends(get_db)):
     """Obtiene un recurso específico."""
-    resource = db.query(Resource).get(resource_id)
+    resource = db.get(Resource, resource_id)
     if not resource:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Recurso no encontrado")
     return resource
@@ -70,7 +70,7 @@ def update_resource(
     _: User = Depends(require_admin),
 ):
     """Actualizar recurso — solo admin."""
-    resource = db.query(Resource).get(resource_id)
+    resource = db.get(Resource, resource_id)
     if not resource:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Recurso no encontrado")
     for field, value in payload.model_dump(exclude_unset=True).items():
