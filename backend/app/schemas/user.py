@@ -4,12 +4,15 @@ Esquemas de validación para Usuario (Pydantic).
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+from typing import Literal
 
+PublicUserRole = Literal["client", "business_owner"]
 
 class UserCreate(BaseModel):
     full_name: str = Field(min_length=2, max_length=120)
     email: EmailStr
     password: str = Field(min_length=8, max_length=72)
+    role: PublicUserRole = "client"
 
     @field_validator("full_name")
     @classmethod
@@ -20,7 +23,6 @@ class UserCreate(BaseModel):
     @classmethod
     def normalize_email(cls, value: EmailStr) -> str:
         return str(value).strip().lower()
-
 
 class UserOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
