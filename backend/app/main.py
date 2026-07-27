@@ -10,7 +10,8 @@ from app.core.database import Base, engine
 from app.routers import auth, businesses, reservations, resources, users
 
 # Crear tablas al iniciar (en producción usa Alembic para migraciones)
-Base.metadata.create_all(bind=engine)
+# El esquema lo administra Alembic (ver Dockerfile: alembic upgrade head)
+# Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
