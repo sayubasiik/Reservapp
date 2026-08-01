@@ -661,7 +661,7 @@ export default function Register() {
       </form>
 
       <footer className="auth__footer">
-        reservvap.com/registro
+        reservapp.com/registro
       </footer>
     </div>
   );

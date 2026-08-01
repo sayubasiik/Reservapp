@@ -110,7 +110,7 @@ export default function TimeSelect() {
         </div>
       </main>
 
-      <footer className="ts__footer">reservvap.com/reservar/horario</footer>
+      <footer className="ts__footer">reservapp.com/reservar/horario</footer>
     </div>
   );
 }

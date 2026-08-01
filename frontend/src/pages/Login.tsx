@@ -268,7 +268,7 @@ export default function Login() {
       </form>
 
       <footer className="auth__footer">
-        reservvap.com/login
+        reservapp.com/login
       </footer>
     </div>
   );

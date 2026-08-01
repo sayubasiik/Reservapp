@@ -106,7 +106,7 @@ export default function BookingSuccess() {
         </div>
       </main>
 
-      <footer className="su__footer">reservvap.com/reservar/exitosa</footer>
+      <footer className="su__footer">reservapp.com/reservar/exitosa</footer>
     </div>
   );
 }

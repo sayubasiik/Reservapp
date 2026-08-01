@@ -412,7 +412,7 @@ export default function CompleteBusinessSetup() {
       </form>
 
       <footer className="auth__footer">
-        reservvap.com/completar-negocio
+        reservapp.com/completar-negocio
       </footer>
     </div>
   );

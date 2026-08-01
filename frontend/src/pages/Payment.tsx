@@ -276,7 +276,7 @@ export default function Payment() {
         </div>
       </main>
 
-      <footer className="py__footer">reservvap.com/reservar/pago</footer>
+      <footer className="py__footer">reservapp.com/reservar/pago</footer>
     </div>
   );
 }

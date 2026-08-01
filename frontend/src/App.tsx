@@ -3,48 +3,70 @@ import {
   Navigate,
   Route,
   Routes,
+  useParams,
 } from 'react-router-dom';
 
-import { RequireAdmin, RequireAuth } from './auth/guards';
+import {
+  RequireAdmin,
+  RequireAuth,
+} from './auth/guards';
 
 import Splash from './pages/Splash';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import CompleteBusinessSetup from './pages/CompleteBusinessSetup';
-
 import Home from './pages/Home';
 import Search from './pages/Search';
-import Favorites from './pages/Favorites';
 import Profile from './pages/Profile';
 import ServiceDetail from './pages/ServiceDetail';
 import BookingCreate from './pages/BookingCreate';
-
-import DateSelect from './pages/DateSelect';
-import TimeSelect from './pages/TimeSelect';
-import BookingConfirm from './pages/BookingConfirm';
-import Payment from './pages/Payment';
-import BookingSuccess from './pages/BookingSuccess';
 import MyReservations from './pages/MyReservations';
-
 import AdminDashboard from './pages/AdminDashboard';
-import AdminCalendar from './pages/AdminCalendar';
 import AdminReports from './pages/AdminReports';
-import AdminClients from './pages/AdminClients';
-import AdminGallery from './pages/AdminGallery';
-import AdminMessages from './pages/AdminMessages';
 import AdminResources from './pages/AdminResources';
 import AdminSettings from './pages/AdminSettings';
+
+function LegacyBookingRedirect() {
+  const { id } =
+    useParams<{ id: string }>();
+
+  return (
+    <Navigate
+      to={
+        id
+          ? `/reservar/${id}`
+          : '/buscar'
+      }
+      replace
+    />
+  );
+}
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Rutas públicas */}
-        <Route path="/bienvenida" element={<Splash />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/registro" element={<Register />} />
-        <Route path="/recuperar" element={<ForgotPassword />} />
+        <Route
+          path="/bienvenida"
+          element={<Splash />}
+        />
+
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+
+        <Route
+          path="/registro"
+          element={<Register />}
+        />
+
+        <Route
+          path="/recuperar"
+          element={<ForgotPassword />}
+        />
 
         <Route
           path="/completar-negocio"
@@ -65,7 +87,6 @@ export default function App() {
           }
         />
 
-        {/* Alias legible para la página de inicio */}
         <Route
           path="/inicio"
           element={
@@ -88,7 +109,10 @@ export default function App() {
           path="/favoritos"
           element={
             <RequireAuth>
-              <Favorites />
+              <Navigate
+                to="/buscar"
+                replace
+              />
             </RequireAuth>
           }
         />
@@ -121,46 +145,10 @@ export default function App() {
         />
 
         <Route
-          path="/reservar/:id/fecha"
+          path="/reservar/:id/*"
           element={
             <RequireAuth>
-              <DateSelect />
-            </RequireAuth>
-          }
-        />
-
-        <Route
-          path="/reservar/:id/horario"
-          element={
-            <RequireAuth>
-              <TimeSelect />
-            </RequireAuth>
-          }
-        />
-
-        <Route
-          path="/reservar/:id/confirmar"
-          element={
-            <RequireAuth>
-              <BookingConfirm />
-            </RequireAuth>
-          }
-        />
-
-        <Route
-          path="/reservar/:id/pago"
-          element={
-            <RequireAuth>
-              <Payment />
-            </RequireAuth>
-          }
-        />
-
-        <Route
-          path="/reservar/:id/exito"
-          element={
-            <RequireAuth>
-              <BookingSuccess />
+              <LegacyBookingRedirect />
             </RequireAuth>
           }
         />
@@ -174,7 +162,7 @@ export default function App() {
           }
         />
 
-        {/* Panel administrativo */}
+        {/* Panel del propietario */}
         <Route
           path="/admin"
           element={
@@ -185,46 +173,10 @@ export default function App() {
         />
 
         <Route
-          path="/admin/calendario"
-          element={
-            <RequireAdmin>
-              <AdminCalendar />
-            </RequireAdmin>
-          }
-        />
-
-        <Route
           path="/admin/reportes"
           element={
             <RequireAdmin>
               <AdminReports />
-            </RequireAdmin>
-          }
-        />
-
-        <Route
-          path="/admin/clientes"
-          element={
-            <RequireAdmin>
-              <AdminClients />
-            </RequireAdmin>
-          }
-        />
-
-        <Route
-          path="/admin/galeria"
-          element={
-            <RequireAdmin>
-              <AdminGallery />
-            </RequireAdmin>
-          }
-        />
-
-        <Route
-          path="/admin/mensajes"
-          element={
-            <RequireAdmin>
-              <AdminMessages />
             </RequireAdmin>
           }
         />
@@ -247,10 +199,27 @@ export default function App() {
           }
         />
 
-        {/* Evita pantallas blancas cuando la ruta no existe */}
+        <Route
+          path="/admin/*"
+          element={
+            <RequireAdmin>
+              <Navigate
+                to="/admin"
+                replace
+              />
+            </RequireAdmin>
+          }
+        />
+
+        {/* Evita pantallas blancas */}
         <Route
           path="*"
-          element={<Navigate to="/bienvenida" replace />}
+          element={
+            <Navigate
+              to="/bienvenida"
+              replace
+            />
+          }
         />
       </Routes>
     </BrowserRouter>

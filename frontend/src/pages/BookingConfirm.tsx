@@ -145,7 +145,7 @@ export default function BookingConfirm() {
         </div>
       </main>
 
-      <footer className="bc__footer">reservvap.com/reservar/confirmar</footer>
+      <footer className="bc__footer">reservapp.com/reservar/confirmar</footer>
     </div>
   );
 }
