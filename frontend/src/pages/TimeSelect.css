@@ -1,0 +1,173 @@
+/* ============================================
+   Selección de Horario — Pantalla 7/12
+   Mobile-first
+   ============================================ */
+
+.ts {
+  min-height: 100vh;
+  background: var(--rv-bg);
+  font-family: var(--rv-font);
+}
+
+.ts__container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--rv-space-2);
+}
+
+/* ---- Card principal ---- */
+.ts__card {
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius-lg);
+  padding: var(--rv-space-3);
+}
+
+.ts__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--rv-text);
+  text-align: center;
+}
+
+.ts__subtitle {
+  margin: 4px 0 var(--rv-space-3);
+  font-size: 14px;
+  color: var(--rv-text-muted);
+  text-align: center;
+}
+
+/* ---- Grid de horarios ---- */
+.ts__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--rv-space-2);
+  margin-bottom: var(--rv-space-4);
+}
+
+.ts__slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 12px;
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  background: var(--rv-white);
+  font-family: var(--rv-font);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--rv-text);
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.ts__slot-time { font-size: 14px; font-weight: 700; }
+
+.ts__slot:hover:not(.is-selected):not(.is-occupied) {
+  background: var(--rv-bg);
+  border-color: var(--rv-navy);
+}
+
+.ts__slot.is-selected {
+  background: var(--rv-navy);
+  color: var(--rv-white);
+  border-color: var(--rv-navy);
+}
+
+/* Horario ocupado: fondo rojo tenue, texto rojo, no seleccionable */
+.ts__slot.is-occupied {
+  background: #FEF2F2;
+  border-color: #FECACA;
+  color: var(--rv-red);
+  cursor: not-allowed;
+}
+
+.ts__slot-tag {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--rv-green);
+}
+.ts__slot.is-selected .ts__slot-tag { color: rgba(255, 255, 255, 0.85); }
+.ts__slot.is-occupied .ts__slot-tag {
+  color: var(--rv-red);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ---- Leyenda ---- */
+.ts__legend {
+  display: flex;
+  justify-content: center;
+  gap: var(--rv-space-3);
+  margin-bottom: var(--rv-space-3);
+}
+.ts__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--rv-text-muted);
+}
+.ts__legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid #E5E7EB;
+}
+.ts__legend-dot--free { background: var(--rv-white); }
+.ts__legend-dot--busy { background: #FEF2F2; border-color: #FECACA; }
+
+/* ---- Botón confirmar ---- */
+.ts__confirm-btn {
+  display: block;
+  width: 60%;
+  margin: 0 auto;
+  padding: 16px;
+  background: var(--rv-navy);
+  color: var(--rv-white);
+  border: none;
+  border-radius: var(--rv-radius);
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--rv-font);
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+.ts__confirm-btn:hover:not(:disabled) {
+  background: var(--rv-navy-dark);
+}
+.ts__confirm-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---- Footer ---- */
+.ts__footer {
+  text-align: center;
+  color: var(--rv-text-light);
+  font-size: 12px;
+  padding: var(--rv-space-3) 0;
+}
+
+/* ---- Responsive ---- */
+@media (min-width: 640px) {
+  .ts__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .ts__title {
+    font-size: 26px;
+  }
+}
+
+@media (min-width: 768px) {
+  .ts__container {
+    padding: var(--rv-space-3);
+  }
+  .ts__card {
+    padding: var(--rv-space-4);
+  }
+}

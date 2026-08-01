@@ -1,0 +1,53 @@
+/* ============================================
+   BookingSteps — Stepper de 5 pasos
+   ============================================ */
+
+.bs {
+  margin-bottom: var(--rv-space-3);
+}
+
+/* Barra de progreso segmentada */
+.bs__track {
+  display: flex;
+  gap: 4px;
+  margin-bottom: var(--rv-space-1);
+}
+
+.bs__segment {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: #E5E7EB;
+  transition: background 0.2s ease;
+}
+
+.bs__segment.is-filled {
+  background: var(--rv-navy);
+}
+
+/* Labels de cada paso */
+.bs__labels {
+  display: flex;
+  justify-content: space-between;
+}
+
+.bs__label {
+  font-size: 12px;
+  color: var(--rv-text-light);
+  white-space: nowrap;
+}
+
+.bs__label.is-active {
+  color: var(--rv-navy);
+  font-weight: 700;
+}
+
+/* En móvil solo mostrar el paso activo y ocultar los demás */
+@media (max-width: 639px) {
+  .bs__label:not(.is-active) {
+    display: none;
+  }
+  .bs__labels {
+    justify-content: center;
+  }
+}

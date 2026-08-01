@@ -1,0 +1,135 @@
+/* ============================================
+   Home (Inicio) — Pantalla 4/12
+   Mobile-first: los estilos base son para móvil
+   y crecen con media queries (min-width).
+   ============================================ */
+
+.home {
+  min-height: 100vh;
+  background: var(--rv-bg);
+  font-family: var(--rv-font);
+}
+
+.home__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--rv-space-2);
+}
+
+/* ---- Banner de bienvenida ---- */
+.home__hero {
+  background: var(--rv-navy);
+  color: var(--rv-white);
+  border-radius: var(--rv-radius-lg);
+  padding: var(--rv-space-3);
+  margin-bottom: var(--rv-space-2);
+}
+.home__greeting { margin: 0; font-size: 22px; font-weight: 700; }
+.home__subtitle {
+  margin: var(--rv-space-1) 0 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ---- Buscador ---- */
+.home__search {
+  display: flex;
+  gap: var(--rv-space-1);
+  margin-bottom: var(--rv-space-3);
+}
+.home__search-field {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-1);
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  padding: 0 var(--rv-space-2);
+}
+.home__search-icon { color: var(--rv-text-muted); font-size: 14px; }
+.home__search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 14px 0;
+  font-size: 15px;
+  font-family: var(--rv-font);
+  color: var(--rv-text);
+}
+.home__search-input::placeholder { color: var(--rv-text-light); }
+.home__search-btn {
+  background: var(--rv-navy);
+  color: var(--rv-white);
+  border: none;
+  border-radius: var(--rv-radius);
+  padding: 0 var(--rv-space-3);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+.home__search-btn:hover { background: var(--rv-navy-dark); }
+
+/* ---- Secciones ---- */
+.home__section { margin-bottom: var(--rv-space-3); }
+.home__section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--rv-space-2);
+}
+.home__section-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--rv-text);
+}
+.home__link {
+  color: var(--rv-navy);
+  font-size: 14px;
+  text-decoration: none;
+  background: none;
+  border: none;
+  font-family: var(--rv-font);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+.home__link:hover { text-decoration: underline; }
+
+/* ---- Categorías: scroll horizontal en móvil ---- */
+.home__categories {
+  display: flex;
+  gap: var(--rv-space-2);
+  overflow-x: auto;
+  padding-bottom: var(--rv-space-1);
+}
+
+/* ---- Servicios populares: grid responsivo ---- */
+.home__services {
+  display: grid;
+  grid-template-columns: 1fr;      /* móvil: 1 columna */
+  gap: var(--rv-space-2);
+}
+
+/* ---- Pie de página ---- */
+.home__footer {
+  text-align: center;
+  color: var(--rv-text-light);
+  font-size: 12px;
+  padding: var(--rv-space-3) 0;
+}
+
+/* =========================================================
+   RESPONSIVO (breakpoints)
+   ========================================================= */
+@media (min-width: 640px) {
+  .home__services { grid-template-columns: repeat(2, 1fr); } /* tablet: 2 col */
+}
+@media (min-width: 768px) {
+  .home__container { padding: var(--rv-space-3); }
+  .home__greeting { font-size: 26px; }
+}
+@media (min-width: 1024px) {
+  .home__services { grid-template-columns: repeat(4, 1fr); } /* escritorio: 4 col */
+}
