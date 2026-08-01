@@ -1,37 +1,56 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import type { ReactNode } from 'react';
-import { businessInitials, slugify } from '../data/businesses';
+
+import {
+  getCurrentUser,
+  hasStoredToken,
+  loginUser,
+  logoutUser,
+  registerUser,
+} from '../api/auth';
+import { getApiError } from '../api/client';
+import { toApiRole, toUiRole } from '../api/roles';
+import type { UiRole } from '../api/roles';
+import type { ApiUser } from '../api/types';
+import {
+  businessInitials,
+  slugify,
+} from '../data/businesses';
 import type { BusinessType } from '../data/businesses';
 import { demoAccounts } from '../data/demoAccounts';
 
-// Dos tipos de usuario según la rúbrica: cliente y dueño de negocio (admin).
-export type Role = 'customer' | 'admin';
+export type Role = UiRole;
+export type RegisterRole =
+  Exclude<Role, 'superadmin'>;
 
-// Dirección guardada del cliente.
 export interface SavedAddress {
   id: string;
-  label: string;    // "Casa", "Trabajo", etc.
-  address: string;  // dirección completa
+  label: string;
+  address: string;
 }
 
-// Método de pago guardado (solo se guardan los últimos 4 dígitos).
 export interface SavedCard {
   id: string;
-  brand: string;    // "Visa", "Mastercard", etc.
+  brand: string;
   last4: string;
   holder: string;
-  expiry: string;   // MM/AA
+  expiry: string;
 }
 
-// Preferencias de notificaciones del cliente.
 export interface NotificationPrefs {
-  reservations: boolean; // confirmaciones y cambios de reserva
-  reminders: boolean;    // recordatorios previos a la cita
-  promotions: boolean;   // ofertas y novedades
-  email: boolean;        // copia por correo
+  reservations: boolean;
+  reminders: boolean;
+  promotions: boolean;
+  email: boolean;
 }
 
-export const DEFAULT_NOTIFICATIONS: NotificationPrefs = {
+export const DEFAULT_NOTIFICATIONS:
+NotificationPrefs = {
   reservations: true,
   reminders: true,
   promotions: false,
@@ -45,193 +64,384 @@ export interface AuthUser {
   initials: string;
   email: string;
   phone?: string;
-  avatar?: string;             // foto de perfil (dataURL) — se edita en el perfil
-  addresses?: SavedAddress[];  // direcciones guardadas (cliente)
-  cards?: SavedCard[];         // métodos de pago (cliente)
-  notifications?: NotificationPrefs; // preferencias de notificaciones (cliente)
-  businessId?: string;         // solo admin: negocio que administra
-  businessType?: BusinessType; // solo admin: giro del negocio
-}
-
-// Una cuenta guardada = usuario + contraseña. En producción viviría en la BD;
-// aquí se persiste en localStorage para que el login valide de verdad.
-interface Account extends AuthUser {
-  password: string;
+  avatar?: string;
+  addresses?: SavedAddress[];
+  cards?: SavedCard[];
+  notifications?: NotificationPrefs;
+  businessId?: string;
+  businessType?: BusinessType;
 }
 
 export interface RegisterData {
-  role: Role;
-  name: string;                // nombre de la persona o del negocio
+  role: RegisterRole;
+  name: string;
   email: string;
   password: string;
   phone?: string;
-  businessType?: BusinessType; // solo admin
+  businessType?: BusinessType;
 }
 
 export interface AuthResult {
   ok: boolean;
   error?: string;
+  user?: AuthUser;
 }
 
 interface AuthContextValue {
   user: AuthUser | null;
-  login: (email: string, password: string, role: Role) => AuthResult;
-  register: (data: RegisterData) => AuthResult;
-  updateUser: (patch: Partial<AuthUser>) => void;
+  isInitializing: boolean;
+  login: (
+    email: string,
+    password: string,
+  ) => Promise<AuthResult>;
+  register: (
+    data: RegisterData,
+  ) => Promise<AuthResult>;
+  updateUser: (
+    patch: Partial<AuthUser>,
+  ) => void;
   logout: () => void;
 }
 
-/* ---- Cuentas de prueba (semilla) ----
-   Varios clientes y un admin por cada negocio (ver data/demoAccounts.ts).
-   Se listan en el cuadro de cuentas de prueba del login.
-   El negocio del admin queda determinado por su credencial (no se elige). */
-function seedAccounts(): Account[] {
-  return demoAccounts.map((d) => {
-    const base: Account = {
-      id: d.businessId ? `admin-${d.businessId}` : `cust-${slugify(d.name)}`,
-      role: d.role,
-      name: d.name,
-      initials: businessInitials(d.name),
-      email: d.email,
-      password: d.password,
-      phone: d.phone,
-    };
-    if (d.role === 'admin') {
-      return { ...base, businessId: d.businessId, businessType: d.businessType };
-    }
-    // El cliente principal arranca con datos de ejemplo; los demás, en blanco.
-    const isMain = d.email === 'olaf.andrade@correo.com';
-    return {
-      ...base,
-      addresses: isMain
-        ? [{ id: 'a1', label: 'Casa', address: 'Av. Universidad 123, Col. Centro, CDMX' }]
-        : [],
-      cards: isMain
-        ? [{ id: 'c1', brand: 'Visa', last4: '4242', holder: d.name, expiry: '08/28' }]
-        : [],
-      notifications: { ...DEFAULT_NOTIFICATIONS },
-    };
-  });
+const PROFILE_PREFIX =
+  'reservapp_ui_profile_';
+
+const LEGACY_USER_KEY =
+  'reservvap_user';
+
+const LEGACY_ACCOUNTS_KEY =
+  'reservvap_accounts';
+
+const AuthContext =
+  createContext<AuthContextValue | null>(
+    null,
+  );
+
+function profileKey(userId: string): string {
+  return `${PROFILE_PREFIX}${userId}`;
 }
 
-// Agrega las cuentas de prueba que falten a las ya guardadas en localStorage,
-// para que al añadir una cuenta demo nueva aparezca sin tener que borrar datos.
-function withDemoAccounts(saved: Account[]): Account[] {
-  const emails = new Set(saved.map((a) => a.email.toLowerCase()));
-  const missing = seedAccounts().filter((a) => !emails.has(a.email.toLowerCase()));
-  return missing.length ? [...saved, ...missing] : saved;
+function readUiProfile(
+  userId: string,
+): Partial<AuthUser> {
+  try {
+    const raw = localStorage.getItem(
+      profileKey(userId),
+    );
+
+    return raw
+      ? (JSON.parse(raw) as Partial<AuthUser>)
+      : {};
+  } catch {
+    return {};
+  }
 }
 
-const USER_KEY = 'reservvap_user';
-const ACCOUNTS_KEY = 'reservvap_accounts';
+function saveUiProfile(
+  user: AuthUser,
+): void {
+  localStorage.setItem(
+    profileKey(user.id),
+    JSON.stringify(user),
+  );
+}
 
-const AuthContext = createContext<AuthContextValue | null>(null);
+function clearLegacyAuth(): void {
+  localStorage.removeItem(
+    LEGACY_USER_KEY,
+  );
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  // Rehidrata la sesión guardada al recargar la página.
-  const [user, setUser] = useState<AuthUser | null>(() => {
-    try {
-      const raw = localStorage.getItem(USER_KEY);
-      return raw ? (JSON.parse(raw) as AuthUser) : null;
-    } catch {
-      return null;
+  localStorage.removeItem(
+    LEGACY_ACCOUNTS_KEY,
+  );
+}
+
+function mapApiUser(
+  apiUser: ApiUser,
+  overrides: Partial<AuthUser> = {},
+): AuthUser {
+  const id = String(apiUser.id);
+  const role = toUiRole(apiUser.role);
+  const cached = readUiProfile(id);
+
+  const demo = demoAccounts.find(
+    (account) =>
+      account.email.toLowerCase() ===
+      apiUser.email.toLowerCase(),
+  );
+
+  const base: AuthUser = {
+    id,
+    role,
+    name: apiUser.full_name,
+    initials: businessInitials(
+      apiUser.full_name,
+    ),
+    email: apiUser.email,
+    phone: demo?.phone,
+  };
+
+  if (role === 'customer') {
+    const isMainDemo =
+      apiUser.email.toLowerCase() ===
+      'olaf.andrade@correo.com';
+
+    base.addresses = isMainDemo
+      ? [
+          {
+            id: 'a1',
+            label: 'Casa',
+            address:
+              'Av. Universidad 123, Col. Centro, CDMX',
+          },
+        ]
+      : [];
+
+    base.cards = isMainDemo
+      ? [
+          {
+            id: 'c1',
+            brand: 'Visa',
+            last4: '4242',
+            holder: apiUser.full_name,
+            expiry: '08/28',
+          },
+        ]
+      : [];
+
+    base.notifications = {
+      ...DEFAULT_NOTIFICATIONS,
+    };
+  }
+
+  if (role === 'admin') {
+    base.businessId =
+      demo?.businessId ??
+      slugify(apiUser.full_name);
+
+    base.businessType =
+      demo?.businessType;
+  }
+
+  const merged: AuthUser = {
+    ...base,
+    ...cached,
+    ...overrides,
+
+    // La identidad y el rol siempre
+    // provienen del backend.
+    id,
+    role,
+    email: apiUser.email,
+  };
+
+  if (!merged.initials) {
+    merged.initials = businessInitials(
+      merged.name,
+    );
+  }
+
+  return merged;
+}
+
+export function AuthProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const [user, setUser] =
+    useState<AuthUser | null>(null);
+
+  const [
+    isInitializing,
+    setIsInitializing,
+  ] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+
+    async function restoreSession() {
+      clearLegacyAuth();
+
+      if (!hasStoredToken()) {
+        if (active) {
+          setIsInitializing(false);
+        }
+
+        return;
+      }
+
+      try {
+        const apiUser =
+          await getCurrentUser();
+
+        const restored =
+          mapApiUser(apiUser);
+
+        if (active) {
+          setUser(restored);
+        }
+      } catch {
+        logoutUser();
+
+        if (active) {
+          setUser(null);
+        }
+      } finally {
+        if (active) {
+          setIsInitializing(false);
+        }
+      }
     }
-  });
 
-  // Catálogo de cuentas (se siembra la primera vez).
-  const [accounts, setAccounts] = useState<Account[]>(() => {
+    void restoreSession();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const login = async (
+    email: string,
+    password: string,
+  ): Promise<AuthResult> => {
     try {
-      const raw = localStorage.getItem(ACCOUNTS_KEY);
-      if (raw) return withDemoAccounts(JSON.parse(raw) as Account[]);
-    } catch { /* ignora json inválido */ }
-    return seedAccounts();
-  });
+      clearLegacyAuth();
 
-  useEffect(() => {
-    if (user) localStorage.setItem(USER_KEY, JSON.stringify(user));
-    else localStorage.removeItem(USER_KEY);
-  }, [user]);
+      const apiUser = await loginUser(
+        email,
+        password,
+      );
 
-  useEffect(() => {
-    localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
-  }, [accounts]);
+      const authenticated =
+        mapApiUser(apiUser);
 
-  const login = (email: string, password: string, role: Role): AuthResult => {
-    const mail = email.trim().toLowerCase();
-    const acc = accounts.find((a) => a.email.toLowerCase() === mail && a.role === role);
-    if (!acc) {
+      setUser(authenticated);
+      saveUiProfile(authenticated);
+
+      return {
+        ok: true,
+        user: authenticated,
+      };
+    } catch (error) {
       return {
         ok: false,
-        error: role === 'admin'
-          ? 'No existe una cuenta de negocio con ese correo.'
-          : 'No existe una cuenta con ese correo.',
+        error: getApiError(error),
       };
     }
-    if (acc.password !== password) return { ok: false, error: 'Contraseña incorrecta.' };
-    const { password: _pw, ...rest } = acc;
-    void _pw;
-    setUser(rest);
-    return { ok: true };
   };
 
-  const register = (data: RegisterData): AuthResult => {
-    const mail = data.email.trim().toLowerCase();
-    if (accounts.some((a) => a.email.toLowerCase() === mail)) {
-      return { ok: false, error: 'Ya existe una cuenta con ese correo.' };
-    }
-    let acc: Account;
-    if (data.role === 'admin') {
-      const businessId = slugify(data.name);
-      acc = {
-        id: `admin-${businessId}-${Date.now()}`,
-        role: 'admin',
-        name: data.name,
-        initials: businessInitials(data.name),
-        email: mail,
+  const register = async (
+    data: RegisterData,
+  ): Promise<AuthResult> => {
+    try {
+      clearLegacyAuth();
+
+      await registerUser({
+        full_name: data.name.trim(),
+        email:
+          data.email
+            .trim()
+            .toLowerCase(),
         password: data.password,
-        phone: data.phone,
-        businessId,
-        businessType: data.businessType,
+        role: toApiRole(data.role),
+      });
+
+      const apiUser = await loginUser(
+        data.email,
+        data.password,
+      );
+
+      const authenticated =
+        mapApiUser(
+          apiUser,
+          {
+            phone:
+              data.phone?.trim(),
+
+            businessId:
+              data.role === 'admin'
+                ? slugify(data.name)
+                : undefined,
+
+            businessType:
+              data.role === 'admin'
+                ? data.businessType
+                : undefined,
+          },
+        );
+
+      setUser(authenticated);
+      saveUiProfile(authenticated);
+
+      return {
+        ok: true,
+        user: authenticated,
       };
-    } else {
-      acc = {
-        id: `cust-${Date.now()}`,
-        role: 'customer',
-        name: data.name,
-        initials: businessInitials(data.name),
-        email: mail,
-        password: data.password,
-        phone: data.phone,
-        addresses: [],
-        cards: [],
-        notifications: { ...DEFAULT_NOTIFICATIONS },
+    } catch (error) {
+      return {
+        ok: false,
+        error: getApiError(error),
       };
     }
-    setAccounts((prev) => [...prev, acc]);
-    const { password: _pw, ...rest } = acc;
-    void _pw;
-    setUser(rest);
-    return { ok: true };
   };
 
-  // Actualiza el usuario en sesión y su cuenta guardada (perfil editable).
-  const updateUser = (patch: Partial<AuthUser>) => {
-    setUser((prev) => (prev ? { ...prev, ...patch } : prev));
-    setAccounts((prev) => prev.map((a) => (user && a.id === user.id ? { ...a, ...patch } : a)));
+  const updateUser = (
+    patch: Partial<AuthUser>,
+  ) => {
+    setUser((current) => {
+      if (!current) {
+        return current;
+      }
+
+      const next: AuthUser = {
+        ...current,
+        ...patch,
+
+        // No permitimos modificar
+        // la identidad ni el rol
+        // mediante preferencias locales.
+        id: current.id,
+        role: current.role,
+      };
+
+      saveUiProfile(next);
+
+      return next;
+    });
   };
 
-  const logout = () => setUser(null);
+  const logout = () => {
+    logoutUser();
+    clearLegacyAuth();
+    setUser(null);
+  };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, updateUser, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isInitializing,
+        login,
+        register,
+        updateUser,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 }
 
-// Hook de acceso al contexto de autenticación.
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth debe usarse dentro de <AuthProvider>');
-  return ctx;
+  const context =
+    useContext(AuthContext);
+
+  if (!context) {
+    throw new Error(
+      'useAuth debe usarse dentro de <AuthProvider>',
+    );
+  }
+
+  return context;
 }
