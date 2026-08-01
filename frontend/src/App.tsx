@@ -32,6 +32,7 @@ import AdminReports from './pages/AdminReports';
 import AdminClients from './pages/AdminClients';
 import AdminGallery from './pages/AdminGallery';
 import AdminMessages from './pages/AdminMessages';
+import AdminResources from './pages/AdminResources';
 import AdminSettings from './pages/AdminSettings';
 
 export default function App() {
@@ -214,6 +215,15 @@ export default function App() {
           element={
             <RequireAdmin>
               <AdminMessages />
+            </RequireAdmin>
+          }
+        />
+
+        <Route
+          path="/admin/recursos"
+          element={
+            <RequireAdmin>
+              <AdminResources />
             </RequireAdmin>
           }
         />

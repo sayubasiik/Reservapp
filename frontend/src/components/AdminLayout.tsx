@@ -7,6 +7,7 @@ import './AdminLayout.css';
 const adminNav = [
   { label: 'Dashboard',     path: '/admin',               icon: '▦' },
   { label: 'Calendario',    path: '/admin/calendario',    icon: '📅' },
+  { label: 'Recursos', path: '/admin/recursos', icon: 'R' },
   { label: 'Reportes',      path: '/admin/reportes',      icon: '📊' },
   { label: 'Clientes',      path: '/admin/clientes',      icon: '👥' },
   { label: 'Galería',       path: '/admin/galeria',       icon: '🖼️' },

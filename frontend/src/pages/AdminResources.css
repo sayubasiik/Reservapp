@@ -1,0 +1,253 @@
+.ar__subtitle {
+  margin: 6px 0 0;
+  color: var(--rv-text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.ar__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--rv-space-2);
+  margin-bottom: var(--rv-space-3);
+}
+
+.ar__stat {
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius-lg);
+  padding: var(--rv-space-2);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ar__stat-label {
+  color: var(--rv-text-muted);
+  font-size: 13px;
+}
+
+.ar__stat-value {
+  color: var(--rv-text);
+  font-size: 26px;
+}
+
+.ar__panel {
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius-lg);
+  padding: var(--rv-space-3);
+}
+
+.ar__panel-head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--rv-space-2);
+  margin-bottom: var(--rv-space-3);
+}
+
+.ar__panel-title {
+  margin: 0 0 6px;
+  color: var(--rv-text);
+  font-size: 18px;
+}
+
+.ar__hint {
+  margin: 0;
+  color: var(--rv-text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+  max-width: 760px;
+}
+
+.ar__state {
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--rv-space-1);
+  text-align: center;
+  color: var(--rv-text-muted);
+}
+
+.ar__state h3,
+.ar__state p {
+  margin: 0;
+}
+
+.ar__state--error {
+  color: var(--rv-red);
+}
+
+.ar__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--rv-space-2);
+}
+
+.ar__card {
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  padding: var(--rv-space-2);
+  background: var(--rv-white);
+}
+
+.ar__card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--rv-space-2);
+}
+
+.ar__card-title {
+  margin: 0 0 8px;
+  color: var(--rv-text);
+  font-size: 17px;
+}
+
+.ar__badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: #ECFDF5;
+  color: #047857;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ar__edit {
+  border: 1px solid #D1D5DB;
+  border-radius: var(--rv-radius);
+  background: var(--rv-white);
+  color: var(--rv-navy);
+  padding: 8px 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ar__edit:hover {
+  background: var(--rv-bg);
+}
+
+.ar__description {
+  margin: var(--rv-space-2) 0;
+  color: var(--rv-text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.ar__details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--rv-space-2);
+  margin: 0;
+}
+
+.ar__details dt {
+  color: var(--rv-text-muted);
+  font-size: 12px;
+}
+
+.ar__details dd {
+  margin: 4px 0 0;
+  color: var(--rv-text);
+  font-size: 14px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.ar__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rv-space-2);
+}
+
+.ar__form-error {
+  border: 1px solid #FCA5A5;
+  border-radius: var(--rv-radius);
+  background: #FEF2F2;
+  color: #B91C1C;
+  padding: 12px;
+  font-size: 13px;
+}
+
+.ar__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ar__field span {
+  color: var(--rv-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ar__field input,
+.ar__field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #D1D5DB;
+  border-radius: var(--rv-radius);
+  padding: 11px 12px;
+  color: var(--rv-text);
+  background: var(--rv-white);
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+}
+
+.ar__field textarea {
+  resize: vertical;
+}
+
+.ar__field input:focus,
+.ar__field textarea:focus {
+  border-color: var(--rv-navy);
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.08);
+}
+
+.ar__field input:disabled,
+.ar__field textarea:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.ar__form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--rv-space-2);
+}
+
+.ar__form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--rv-space-1);
+  margin-top: var(--rv-space-1);
+}
+
+@media (min-width: 700px) {
+  .ar__grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .ar__form-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .ar__form-grid .ar__field:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1100px) {
+  .ar__grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+}
