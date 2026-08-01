@@ -265,19 +265,18 @@ export default function ServiceDetail() {
               <button
                 type="button"
                 className="sd__reserve-btn"
-                disabled
-                aria-describedby="sd-reserve-note"
+                onClick={() =>
+                  navigate(
+                    `/reservar/${item.resourceId}`,
+                  )
+                }
               >
-                Seleccionar fecha
+                Seleccionar fecha y hora
               </button>
 
-              <p
-                className="sd__reserve-note"
-                id="sd-reserve-note"
-              >
-                La reservación se habilitará en el
-                siguiente bloque, cuando conectemos
-                disponibilidad y horarios reales.
+              <p className="sd__reserve-note">
+                Comprobaremos la disponibilidad
+                antes de confirmar la reserva.
               </p>
             </>
           )}

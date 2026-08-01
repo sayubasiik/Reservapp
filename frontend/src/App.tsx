@@ -18,6 +18,7 @@ import Search from './pages/Search';
 import Favorites from './pages/Favorites';
 import Profile from './pages/Profile';
 import ServiceDetail from './pages/ServiceDetail';
+import BookingCreate from './pages/BookingCreate';
 
 import DateSelect from './pages/DateSelect';
 import TimeSelect from './pages/TimeSelect';
@@ -106,6 +107,15 @@ export default function App() {
           element={
             <RequireAuth>
               <ServiceDetail />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/reservar/:id"
+          element={
+            <RequireAuth>
+              <BookingCreate />
             </RequireAuth>
           }
         />
