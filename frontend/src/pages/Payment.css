@@ -1,0 +1,274 @@
+/* ============================================
+   Pago — Pantalla 9/12
+   Mobile-first, 2 columnas en desktop
+   ============================================ */
+
+.py {
+  min-height: 100vh;
+  background: var(--rv-bg);
+  font-family: var(--rv-font);
+}
+
+.py__container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--rv-space-2);
+}
+
+/* Layout: 1 col en móvil, 2 col en desktop */
+.py__layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rv-space-2);
+}
+
+/* ---- Card genérica ---- */
+.py__card {
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius-lg);
+  padding: var(--rv-space-3);
+}
+
+.py__heading {
+  margin: 0 0 var(--rv-space-2);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--rv-text);
+}
+
+/* ---- Métodos de pago ---- */
+.py__methods {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rv-space-1);
+  margin-bottom: var(--rv-space-3);
+}
+
+.py__method {
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-1);
+  padding: 14px var(--rv-space-2);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.py__method.is-selected {
+  border-color: var(--rv-navy);
+  background: rgba(30, 58, 138, 0.03);
+}
+
+.py__method-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--rv-navy);
+  flex-shrink: 0;
+}
+
+.py__method-label {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--rv-text);
+}
+
+.py__method-radio {
+  accent-color: var(--rv-navy);
+}
+
+/* ---- Formulario de tarjeta ---- */
+.py__form {
+  margin-bottom: var(--rv-space-2);
+}
+
+.py__form-title {
+  margin: 0 0 var(--rv-space-2);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--rv-navy);
+}
+
+.py__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: var(--rv-space-2);
+}
+
+.py__field-label {
+  font-size: 12px;
+  color: var(--rv-text-muted);
+}
+
+.py__input {
+  padding: 12px var(--rv-space-2);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  font-family: var(--rv-font);
+  font-size: 14px;
+  color: var(--rv-text);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.py__input:focus {
+  border-color: var(--rv-navy);
+}
+.py__input::placeholder {
+  color: var(--rv-text-light);
+}
+
+/* ---- Badge SSL ---- */
+.py__ssl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--rv-space-1);
+  padding: 12px;
+  background: #FFF7ED;
+  border: 1px solid #FDE68A;
+  border-radius: var(--rv-radius);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rv-green);
+  margin-bottom: var(--rv-space-3);
+}
+
+.py__ssl-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--rv-green);
+  flex-shrink: 0;
+}
+
+/* ---- Aviso de pago en el lugar ---- */
+.py__pending {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--rv-space-2);
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  border-radius: var(--rv-radius);
+  margin-bottom: var(--rv-space-3);
+}
+.py__pending-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #B45309;
+}
+.py__pending-text {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--rv-text-muted);
+}
+
+/* ---- Botón pagar ---- */
+.py__pay-btn {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  background: var(--rv-navy);
+  color: var(--rv-white);
+  border: none;
+  border-radius: var(--rv-radius);
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--rv-font);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.py__pay-btn:hover {
+  background: var(--rv-navy-dark);
+}
+
+/* ---- Resumen del pedido ---- */
+.py__summary-header {
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-2);
+  margin-bottom: var(--rv-space-3);
+}
+
+.py__summary-img {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--rv-radius);
+  background-color: #CBD5E1;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.py__summary-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.py__summary-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--rv-text);
+}
+
+.py__summary-desc {
+  font-size: 13px;
+  color: var(--rv-text-muted);
+}
+
+/* Filas de totales */
+.py__summary-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rv-space-1);
+}
+
+.py__summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--rv-navy);
+}
+
+.py__summary-row--total {
+  font-weight: 700;
+  font-size: 16px;
+  padding-top: var(--rv-space-1);
+  border-top: 1px solid #E5E7EB;
+  margin-top: var(--rv-space-1);
+}
+
+/* ---- Footer ---- */
+.py__footer {
+  text-align: center;
+  color: var(--rv-text-light);
+  font-size: 12px;
+  padding: var(--rv-space-3) 0;
+}
+
+/* ---- Responsive: 2 columnas ---- */
+@media (min-width: 768px) {
+  .py__container {
+    padding: var(--rv-space-3);
+  }
+  .py__layout {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .py__card:first-child {
+    flex: 3;
+  }
+  .py__summary {
+    flex: 2;
+    position: sticky;
+    top: var(--rv-space-2);
+  }
+}
+
+/* Validación de tarjeta */
+.py__input.has-error { border-color: #DC2626; background: #FEF2F2; }
+.py__error { display: block; margin-top: 4px; font-size: 12px; font-weight: 600; color: #DC2626; }

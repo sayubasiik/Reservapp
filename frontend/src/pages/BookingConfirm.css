@@ -1,0 +1,201 @@
+/* ============================================
+   Confirmación de Reserva — Pantalla 8/12
+   Mobile-first
+   ============================================ */
+
+.bc {
+  min-height: 100vh;
+  background: var(--rv-bg);
+  font-family: var(--rv-font);
+}
+
+.bc__container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--rv-space-2);
+}
+
+/* ---- Card principal ---- */
+.bc__card {
+  background: var(--rv-white);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius-lg);
+  padding: var(--rv-space-3);
+}
+
+.bc__title {
+  margin: 0 0 var(--rv-space-3);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--rv-text);
+  text-align: center;
+}
+
+/* ---- Encabezado del servicio ---- */
+.bc__service-header {
+  display: flex;
+  align-items: center;
+  gap: var(--rv-space-2);
+  margin-bottom: var(--rv-space-2);
+}
+
+.bc__service-img {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--rv-radius);
+  background-color: #CBD5E1;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.bc__service-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bc__service-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--rv-text);
+}
+
+.bc__service-stars {
+  color: var(--rv-amber);
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.bc__service-address {
+  margin: 0;
+  font-size: 13px;
+  color: var(--rv-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Punto indicador navy */
+.bc__dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--rv-navy);
+  flex-shrink: 0;
+}
+
+/* ---- Divisor ---- */
+.bc__divider {
+  border: none;
+  border-top: 1px solid #E5E7EB;
+  margin: var(--rv-space-2) 0;
+}
+
+/* ---- Filas de detalle ---- */
+.bc__details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rv-space-2);
+}
+
+.bc__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bc__label {
+  font-size: 14px;
+  color: var(--rv-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bc__value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--rv-text);
+  text-align: right;
+}
+
+/* ---- Total ---- */
+.bc__total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--rv-space-3);
+}
+
+.bc__total-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--rv-text);
+}
+
+/* Desglose del precio (por noche, por persona, etc.) */
+.bc__total-note {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--rv-text-muted);
+}
+
+.bc__total-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--rv-text);
+}
+
+/* ---- Botón pagar ---- */
+.bc__pay-btn {
+  display: block;
+  width: 60%;
+  margin: 0 auto;
+  padding: 16px;
+  background: var(--rv-navy);
+  color: var(--rv-white);
+  border: none;
+  border-radius: var(--rv-radius);
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--rv-font);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.bc__pay-btn:hover {
+  background: var(--rv-navy-dark);
+}
+
+/* ---- Footer ---- */
+.bc__footer {
+  text-align: center;
+  color: var(--rv-text-light);
+  font-size: 12px;
+  padding: var(--rv-space-3) 0;
+}
+
+/* ---- Responsive ---- */
+@media (min-width: 640px) {
+  .bc__service-img {
+    width: 100px;
+    height: 100px;
+  }
+  .bc__title {
+    font-size: 26px;
+  }
+}
+
+@media (min-width: 768px) {
+  .bc__container {
+    padding: var(--rv-space-3);
+  }
+  .bc__card {
+    padding: var(--rv-space-4);
+  }
+}
