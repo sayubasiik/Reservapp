@@ -18,7 +18,7 @@ export default function AdminDashboard() {
   const { reservations, acceptReservation, cancelReservation } = useStore();
   const { user } = useAuth();
   const bizId = user?.businessId;
-  const bizName = user?.name;
+  const bizName = user?.businessName ?? user?.name;
 
   // Solo las reservas de ESTE negocio (incluye sus cuartos de hotel).
   const mine = reservations.filter((r) => belongsToBusiness(r.serviceId, bizId));

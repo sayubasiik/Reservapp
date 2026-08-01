@@ -1,27 +1,45 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {
+  useNavigate,
+} from 'react-router-dom';
 
-import { useAuth } from '../auth/AuthContext';
-import '../styles/variables.css';
-import './Auth.css';
+import {
+  useAuth,
+} from '../auth/AuthContext';
 import {
   AlertIcon,
 } from '../components/AuthIcons';
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+import '../styles/variables.css';
+import './Auth.css';
+
+const EMAIL_RE =
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<{
-    email?: string;
-    password?: string;
-  }>({});
-  const [alert, setAlert] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [email, setEmail] =
+    useState('');
+
+  const [password, setPassword] =
+    useState('');
+
+  const [errors, setErrors] =
+    useState<{
+      email?: string;
+      password?: string;
+    }>({});
+
+  const [alert, setAlert] =
+    useState<string | null>(null);
+
+  const [
+    isSubmitting,
+    setIsSubmitting,
+  ] = useState(false);
 
   const validate = () => {
     const nextErrors: {
@@ -30,21 +48,30 @@ export default function Login() {
     } = {};
 
     if (!email.trim()) {
-      nextErrors.email = 'Escribe tu correo electrónico.';
-    } else if (!EMAIL_RE.test(email.trim())) {
-      nextErrors.email = 'El correo no tiene un formato válido.';
+      nextErrors.email =
+        'Escribe tu correo electrónico.';
+    } else if (
+      !EMAIL_RE.test(email.trim())
+    ) {
+      nextErrors.email =
+        'El correo no tiene un formato válido.';
     }
 
     if (!password) {
-      nextErrors.password = 'Escribe tu contraseña.';
+      nextErrors.password =
+        'Escribe tu contraseña.';
     }
 
     setErrors(nextErrors);
-    return Object.keys(nextErrors).length === 0;
+
+    return (
+      Object.keys(nextErrors).length === 0
+    );
   };
 
   const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>,
+    event:
+      FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
     setAlert(null);
@@ -56,17 +83,39 @@ export default function Login() {
     try {
       setIsSubmitting(true);
 
-      const result = await login(email, password);
+      const result =
+        await login(
+          email,
+          password,
+        );
 
       if (!result.ok || !result.user) {
         setAlert(
-          result.error ?? 'No se pudo iniciar sesión.',
+          result.error ??
+            'No se pudo iniciar sesión.',
         );
+
+        return;
+      }
+
+      if (
+        result.requiresBusinessSetup ||
+        result.user.needsBusinessSetup
+      ) {
+        navigate(
+          '/completar-negocio',
+          {
+            replace: true,
+          },
+        );
+
         return;
       }
 
       navigate(
-        result.user.role === 'customer' ? '/' : '/admin',
+        result.user.role === 'customer'
+          ? '/'
+          : '/admin',
       );
     } finally {
       setIsSubmitting(false);
@@ -80,7 +129,9 @@ export default function Login() {
         onSubmit={handleSubmit}
         noValidate
       >
-        <div className="auth__logo">RV</div>
+        <div className="auth__logo">
+          RV
+        </div>
 
         <h1 className="auth__title">
           Iniciar Sesión
@@ -92,9 +143,11 @@ export default function Login() {
 
         <div className="auth__demo">
           <p className="auth__demo-hint">
-            El tipo de cuenta y sus permisos se
-            determinan automáticamente con la
-            información registrada en el servidor.
+            El tipo de cuenta y sus
+            permisos se determinan
+            automáticamente con la
+            información registrada en el
+            servidor.
           </p>
         </div>
 
@@ -109,7 +162,7 @@ export default function Login() {
             />
 
             <span>{alert}</span>
-                      </div>
+          </div>
         )}
 
         <label className="auth__field">
@@ -121,12 +174,16 @@ export default function Login() {
             type="email"
             autoComplete="email"
             className={`auth__input ${
-              errors.email ? 'has-error' : ''
+              errors.email
+                ? 'has-error'
+                : ''
             }`}
             placeholder="ejemplo@correo.com"
             value={email}
             onChange={(event) =>
-              setEmail(event.target.value)
+              setEmail(
+                event.target.value,
+              )
             }
             disabled={isSubmitting}
           />
@@ -147,12 +204,16 @@ export default function Login() {
             type="password"
             autoComplete="current-password"
             className={`auth__input ${
-              errors.password ? 'has-error' : ''
+              errors.password
+                ? 'has-error'
+                : ''
             }`}
             placeholder="••••••••••"
             value={password}
             onChange={(event) =>
-              setPassword(event.target.value)
+              setPassword(
+                event.target.value,
+              )
             }
             disabled={isSubmitting}
           />
@@ -184,7 +245,9 @@ export default function Login() {
           className="auth__submit"
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'Ingresando…' : 'Ingresar'}
+          {isSubmitting
+            ? 'Ingresando…'
+            : 'Ingresar'}
         </button>
 
         <p className="auth__foot">

@@ -11,6 +11,7 @@ import Splash from './pages/Splash';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
+import CompleteBusinessSetup from './pages/CompleteBusinessSetup';
 
 import Home from './pages/Home';
 import Search from './pages/Search';
@@ -42,6 +43,15 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Register />} />
         <Route path="/recuperar" element={<ForgotPassword />} />
+
+        <Route
+          path="/completar-negocio"
+          element={
+            <RequireAdmin>
+              <CompleteBusinessSetup />
+            </RequireAdmin>
+          }
+        />
 
         {/* Aplicación del cliente */}
         <Route

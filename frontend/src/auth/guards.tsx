@@ -1,7 +1,14 @@
-import { Navigate } from 'react-router-dom';
-import type { ReactNode } from 'react';
+import {
+  Navigate,
+  useLocation,
+} from 'react-router-dom';
+import type {
+  ReactNode,
+} from 'react';
 
-import { useAuth } from './AuthContext';
+import {
+  useAuth,
+} from './AuthContext';
 
 function SessionLoader() {
   return (
@@ -57,6 +64,8 @@ export function RequireAdmin({
     isInitializing,
   } = useAuth();
 
+  const location = useLocation();
+
   if (isInitializing) {
     return <SessionLoader />;
   }
@@ -77,6 +86,38 @@ export function RequireAdmin({
     return (
       <Navigate
         to="/"
+        replace
+      />
+    );
+  }
+
+  const isSetupRoute =
+    location.pathname ===
+    '/completar-negocio';
+
+  if (
+    user.role === 'admin' &&
+    user.needsBusinessSetup &&
+    !isSetupRoute
+  ) {
+    return (
+      <Navigate
+        to="/completar-negocio"
+        replace
+      />
+    );
+  }
+
+  if (
+    isSetupRoute &&
+    (
+      user.role === 'superadmin' ||
+      !user.needsBusinessSetup
+    )
+  ) {
+    return (
+      <Navigate
+        to="/admin"
         replace
       />
     );

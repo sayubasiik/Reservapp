@@ -13,15 +13,27 @@ import {
   logoutUser,
   registerUser,
 } from '../api/auth';
+import {
+  createBusiness,
+  findOwnedBusiness,
+} from '../api/businesses';
 import { getApiError } from '../api/client';
-import { toApiRole, toUiRole } from '../api/roles';
+import {
+  toApiRole,
+  toUiRole,
+} from '../api/roles';
 import type { UiRole } from '../api/roles';
-import type { ApiUser } from '../api/types';
+import type {
+  ApiUser,
+  Business,
+} from '../api/types';
 import {
   businessInitials,
   slugify,
 } from '../data/businesses';
-import type { BusinessType } from '../data/businesses';
+import type {
+  BusinessType,
+} from '../data/businesses';
 import { demoAccounts } from '../data/demoAccounts';
 
 export type Role = UiRole;
@@ -57,6 +69,14 @@ NotificationPrefs = {
   email: true,
 };
 
+export interface BusinessSetupData {
+  name: string;
+  category: BusinessType;
+  phone?: string;
+  address?: string;
+  description?: string;
+}
+
 export interface AuthUser {
   id: string;
   role: Role;
@@ -68,8 +88,19 @@ export interface AuthUser {
   addresses?: SavedAddress[];
   cards?: SavedCard[];
   notifications?: NotificationPrefs;
+
+  // Identificador local para los modulos mock existentes.
   businessId?: string;
+
+  // Identificador numerico real devuelto por PostgreSQL.
+  apiBusinessId?: number;
+
+  businessName?: string;
   businessType?: BusinessType;
+  businessAddress?: string;
+  businessDescription?: string;
+  needsBusinessSetup?: boolean;
+  businessLookupFailed?: boolean;
 }
 
 export interface RegisterData {
@@ -78,13 +109,14 @@ export interface RegisterData {
   email: string;
   password: string;
   phone?: string;
-  businessType?: BusinessType;
+  business?: BusinessSetupData;
 }
 
 export interface AuthResult {
   ok: boolean;
   error?: string;
   user?: AuthUser;
+  requiresBusinessSetup?: boolean;
 }
 
 interface AuthContextValue {
@@ -96,6 +128,9 @@ interface AuthContextValue {
   ) => Promise<AuthResult>;
   register: (
     data: RegisterData,
+  ) => Promise<AuthResult>;
+  completeBusinessSetup: (
+    data: BusinessSetupData,
   ) => Promise<AuthResult>;
   updateUser: (
     patch: Partial<AuthUser>,
@@ -112,12 +147,23 @@ const LEGACY_USER_KEY =
 const LEGACY_ACCOUNTS_KEY =
   'reservvap_accounts';
 
+const BUSINESS_TYPES: BusinessType[] = [
+  'alimentos',
+  'ejercicio',
+  'belleza',
+  'medico',
+  'hospedaje',
+  'eventos',
+];
+
 const AuthContext =
   createContext<AuthContextValue | null>(
     null,
   );
 
-function profileKey(userId: string): string {
+function profileKey(
+  userId: string,
+): string {
   return `${PROFILE_PREFIX}${userId}`;
 }
 
@@ -153,6 +199,14 @@ function clearLegacyAuth(): void {
 
   localStorage.removeItem(
     LEGACY_ACCOUNTS_KEY,
+  );
+}
+
+function asBusinessType(
+  value?: string | null,
+): BusinessType | undefined {
+  return BUSINESS_TYPES.find(
+    (type) => type === value,
   );
 }
 
@@ -217,7 +271,7 @@ function mapApiUser(
   if (role === 'admin') {
     base.businessId =
       demo?.businessId ??
-      slugify(apiUser.full_name);
+      `owner-${apiUser.id}`;
 
     base.businessType =
       demo?.businessType;
@@ -242,6 +296,91 @@ function mapApiUser(
   }
 
   return merged;
+}
+
+function applyBusiness(
+  user: AuthUser,
+  business: Business,
+): AuthUser {
+  return {
+    ...user,
+    apiBusinessId: business.id,
+    businessId: slugify(business.name),
+    businessName: business.name,
+    businessType:
+      asBusinessType(business.category) ??
+      user.businessType,
+    phone: business.phone ?? user.phone,
+    businessAddress:
+      business.address ?? undefined,
+    businessDescription:
+      business.description ?? undefined,
+    needsBusinessSetup: false,
+    businessLookupFailed: false,
+  };
+}
+
+async function resolveOwnedBusiness(
+  apiUser: ApiUser,
+  user: AuthUser,
+): Promise<AuthUser> {
+  if (
+    apiUser.role !== 'business_owner'
+  ) {
+    return user;
+  }
+
+  try {
+    const business =
+      await findOwnedBusiness(apiUser.id);
+
+    if (!business) {
+      return {
+        ...user,
+        apiBusinessId: undefined,
+        businessName: undefined,
+        businessAddress: undefined,
+        businessDescription: undefined,
+        needsBusinessSetup: true,
+        businessLookupFailed: false,
+      };
+    }
+
+    return applyBusiness(
+      user,
+      business,
+    );
+  } catch {
+    // No confundimos una falla temporal de red
+    // con la ausencia real de un negocio.
+    return {
+      ...user,
+      needsBusinessSetup: false,
+      businessLookupFailed: true,
+    };
+  }
+}
+
+async function getOrCreateBusiness(
+  ownerId: number,
+  data: BusinessSetupData,
+): Promise<Business> {
+  const existing =
+    await findOwnedBusiness(ownerId);
+
+  if (existing) {
+    return existing;
+  }
+
+  return createBusiness({
+    name: data.name.trim(),
+    category: data.category,
+    phone: data.phone?.trim() || null,
+    address:
+      data.address?.trim() || null,
+    description:
+      data.description?.trim() || null,
+  });
 }
 
 export function AuthProvider({
@@ -275,11 +414,18 @@ export function AuthProvider({
         const apiUser =
           await getCurrentUser();
 
-        const restored =
+        const mapped =
           mapApiUser(apiUser);
+
+        const restored =
+          await resolveOwnedBusiness(
+            apiUser,
+            mapped,
+          );
 
         if (active) {
           setUser(restored);
+          saveUiProfile(restored);
         }
       } catch {
         logoutUser();
@@ -313,8 +459,14 @@ export function AuthProvider({
         password,
       );
 
-      const authenticated =
+      const mapped =
         mapApiUser(apiUser);
+
+      const authenticated =
+        await resolveOwnedBusiness(
+          apiUser,
+          mapped,
+        );
 
       setUser(authenticated);
       saveUiProfile(authenticated);
@@ -322,6 +474,8 @@ export function AuthProvider({
       return {
         ok: true,
         user: authenticated,
+        requiresBusinessSetup:
+          authenticated.needsBusinessSetup,
       };
     } catch (error) {
       return {
@@ -334,6 +488,8 @@ export function AuthProvider({
   const register = async (
     data: RegisterData,
   ): Promise<AuthResult> => {
+    let accountCreated = false;
+
     try {
       clearLegacyAuth();
 
@@ -347,29 +503,79 @@ export function AuthProvider({
         role: toApiRole(data.role),
       });
 
+      accountCreated = true;
+
       const apiUser = await loginUser(
         data.email,
         data.password,
       );
 
-      const authenticated =
+      let authenticated =
         mapApiUser(
           apiUser,
           {
             phone:
               data.phone?.trim(),
-
-            businessId:
-              data.role === 'admin'
-                ? slugify(data.name)
-                : undefined,
-
-            businessType:
-              data.role === 'admin'
-                ? data.businessType
-                : undefined,
           },
         );
+
+      if (data.role === 'admin') {
+        if (!data.business) {
+          throw new Error(
+            'Faltan los datos del negocio.',
+          );
+        }
+
+        try {
+          const business =
+            await getOrCreateBusiness(
+              apiUser.id,
+              data.business,
+            );
+
+          authenticated =
+            applyBusiness(
+              authenticated,
+              business,
+            );
+        } catch (error) {
+          const pending: AuthUser = {
+            ...authenticated,
+            businessId:
+              slugify(
+                data.business.name,
+              ),
+            businessName:
+              data.business.name.trim(),
+            businessType:
+              data.business.category,
+            businessAddress:
+              data.business.address?.trim(),
+            businessDescription:
+              data.business.description?.trim(),
+            phone:
+              data.business.phone?.trim() ||
+              authenticated.phone,
+            apiBusinessId: undefined,
+            needsBusinessSetup: true,
+            businessLookupFailed: false,
+          };
+
+          setUser(pending);
+          saveUiProfile(pending);
+
+          return {
+            ok: false,
+            user: pending,
+            requiresBusinessSetup: true,
+            error:
+              'La cuenta se creó correctamente, ' +
+              'pero el negocio no pudo registrarse. ' +
+              'Puedes reintentar sin crear otra cuenta. ' +
+              getApiError(error),
+          };
+        }
+      }
 
       setUser(authenticated);
       saveUiProfile(authenticated);
@@ -381,6 +587,51 @@ export function AuthProvider({
     } catch (error) {
       return {
         ok: false,
+        error: accountCreated
+          ? 'La cuenta se creó, pero no fue posible ' +
+            'completar el inicio de sesión. ' +
+            getApiError(error)
+          : getApiError(error),
+      };
+    }
+  };
+
+  const completeBusinessSetup = async (
+    data: BusinessSetupData,
+  ): Promise<AuthResult> => {
+    if (!user || user.role !== 'admin') {
+      return {
+        ok: false,
+        error:
+          'Necesitas iniciar sesión como propietario.',
+      };
+    }
+
+    try {
+      const business =
+        await getOrCreateBusiness(
+          Number(user.id),
+          data,
+        );
+
+      const completed =
+        applyBusiness(
+          user,
+          business,
+        );
+
+      setUser(completed);
+      saveUiProfile(completed);
+
+      return {
+        ok: true,
+        user: completed,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        user,
+        requiresBusinessSetup: true,
         error: getApiError(error),
       };
     }
@@ -399,10 +650,12 @@ export function AuthProvider({
         ...patch,
 
         // No permitimos modificar
-        // la identidad ni el rol
-        // mediante preferencias locales.
+        // la identidad, el rol ni el id
+        // real del negocio localmente.
         id: current.id,
         role: current.role,
+        apiBusinessId:
+          current.apiBusinessId,
       };
 
       saveUiProfile(next);
@@ -424,6 +677,7 @@ export function AuthProvider({
         isInitializing,
         login,
         register,
+        completeBusinessSetup,
         updateUser,
         logout,
       }}

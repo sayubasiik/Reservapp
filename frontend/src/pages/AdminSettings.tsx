@@ -45,12 +45,12 @@ export default function AdminSettings() {
   const defaultCategory = businessCategories.find((c) => c.type === user?.businessType)?.label ?? 'Belleza';
 
   // Estado local del perfil (se guarda al store al presionar Guardar).
-  const [name, setName] = useState(profile.name ?? user?.name ?? '');
+  const [name, setName] = useState(profile.name ?? user?.businessName ?? user?.name ?? '');
   const [category, setCategory] = useState(profile.category ?? defaultCategory);
-  const [phone, setPhone] = useState(profile.phone ?? '(55) 1234 5678');
+  const [phone, setPhone] = useState(profile.phone ?? user?.phone ?? '');
   const [email, setEmail] = useState(profile.email ?? user?.email ?? '');
-  const [address, setAddress] = useState(profile.address ?? '');
-  const [description, setDescription] = useState(profile.description ?? '');
+  const [address, setAddress] = useState(profile.address ?? user?.businessAddress ?? '');
+  const [description, setDescription] = useState(profile.description ?? user?.businessDescription ?? '');
   const [hours, setHours] = useState<DayHours[]>(profile.hours ?? DEFAULT_HOURS);
   const [instagram, setInstagram] = useState(profile.instagram ?? '');
   const [facebook, setFacebook] = useState(profile.facebook ?? '');

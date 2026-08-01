@@ -41,7 +41,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         >
           <span className="ad__logo">RV</span>
           <div>
-            <span className="ad__brand-name">{user?.name ?? 'ReservVap'}</span>
+            <span className="ad__brand-name">{user?.businessName ?? user?.name ?? 'ReservApp'}</span>
             <span className="ad__brand-sub">Panel Administrador</span>
           </div>
         </div>
