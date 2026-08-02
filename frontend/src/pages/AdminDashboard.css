@@ -1,217 +1,219 @@
-/* ============================================
-   Panel Administrador — Dashboard (12/20)
-   Solo estilos propios del dashboard.
-   El shell (sidebar, header, footer) vive en AdminLayout.css
-   ============================================ */
+.db__subtitle {
+  margin: 6px 0 0;
+  color: var(--rv-text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
 
-/* ---- Estadísticas ---- */
-.ad__stats {
+.db__period {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius);
+  padding: 0 11px;
+  background: var(--rv-white);
+  color: var(--rv-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.db__period select {
+  min-height: 42px;
+  border: 0;
+  background: transparent;
+  color: var(--rv-navy);
+  font: inherit;
+  outline: none;
+  cursor: pointer;
+}
+
+.db__period select:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.db__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rv-space-1);
+  margin-bottom: var(--rv-space-2);
+  color: var(--rv-text-light);
+  font-size: 12px;
+}
+
+.db__scope {
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: #DBEAFE;
+  color: var(--rv-navy);
+  font-weight: 800;
+}
+
+.db__stats {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: var(--rv-space-2);
   margin-bottom: var(--rv-space-3);
 }
-.ad__stat {
-  background: var(--rv-white);
+
+.db__stat {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
   border: 1px solid #E5E7EB;
   border-radius: var(--rv-radius-lg);
   padding: var(--rv-space-2);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.ad__stat-label { font-size: 13px; color: var(--rv-text-muted); }
-.ad__stat-value { font-size: 26px; font-weight: 800; color: var(--rv-text); }
-.ad__stat-delta { font-size: 13px; font-weight: 700; color: var(--rv-green); }
-
-/* ---- Paneles ---- */
-.ad__panel {
   background: var(--rv-white);
+}
+
+.db__stat > span {
+  color: var(--rv-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.db__stat strong {
+  color: var(--rv-text);
+  font-size: 24px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.db__stat small {
+  color: var(--rv-text-light);
+  font-size: 11px;
+}
+
+.db__panel {
+  margin-bottom: var(--rv-space-3);
   border: 1px solid #E5E7EB;
   border-radius: var(--rv-radius-lg);
   padding: var(--rv-space-3);
-  margin-bottom: var(--rv-space-3);
-}
-.ad__panel-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--rv-space-3);
-}
-.ad__panel-title {
-  margin: 0;
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--rv-text);
-}
-.ad__panel-action {
-  background: none;
-  border: none;
-  color: var(--rv-navy);
-  font-family: var(--rv-font);
-  font-size: 13px;
-  cursor: pointer;
-}
-.ad__panel-action:hover { text-decoration: underline; }
-
-/* ---- Gráfico de barras ---- */
-.ad__chart {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--rv-space-1);
-  height: 180px;
-}
-.ad__bar-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  height: 100%;
-  gap: 8px;
-}
-.ad__bar {
-  width: 100%;
-  max-width: 48px;
-  background: var(--rv-navy);
-  border-radius: 8px 8px 0 0;
-  transition: height 0.2s ease;
-}
-.ad__bar-label { font-size: 12px; color: var(--rv-text-muted); }
-
-/* ---- Reservas por atender ---- */
-.ad__pending-pill {
-  display: inline-block;
-  margin-left: 8px;
-  padding: 3px 10px;
-  border-radius: 999px;
-  background: #FFFBEB;
-  color: var(--rv-amber);
-  font-size: 12px;
-  font-weight: 700;
-  vertical-align: middle;
-}
-.ad__empty { color: var(--rv-text-muted); font-size: 14px; margin: 0; }
-
-.ad__res-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--rv-space-1);
-}
-.ad__res {
-  display: flex;
-  align-items: center;
-  gap: var(--rv-space-2);
-  border: 1px solid #E5E7EB;
-  border-radius: var(--rv-radius);
-  padding: 12px var(--rv-space-2);
-  flex-wrap: wrap;
-}
-.ad__res-when {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: var(--rv-cat-blue);
-  border-radius: 8px;
-  padding: 6px 10px;
-  min-width: 70px;
-}
-.ad__res-time { font-size: 13px; font-weight: 800; color: var(--rv-navy); }
-.ad__res-date { font-size: 10px; color: var(--rv-text-muted); }
-.ad__res-info { flex: 1; min-width: 120px; display: flex; flex-direction: column; }
-.ad__res-client { font-size: 14px; font-weight: 700; color: var(--rv-text); }
-.ad__res-service { font-size: 12px; color: var(--rv-text-muted); }
-.ad__res-extra:not(:empty) {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--rv-navy);
-}
-
-/* Estado del cobro de la reserva */
-.ad__res-pay {
-  align-self: flex-start;
-  margin-top: 2px;
-  font-size: 11px;
-  font-weight: 700;
-}
-.ad__res-pay--pagado { color: var(--rv-green); }
-.ad__res-pay--pendiente { color: #B45309; }
-
-.ad__res-badge {
-  padding: 5px 12px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--rv-white);
-}
-.ad__res-badge--pendiente  { background: var(--rv-amber); }
-.ad__res-badge--confirmada { background: var(--rv-green); }
-.ad__res-badge--cancelada  { background: var(--rv-red); }
-
-.ad__res-actions { display: flex; gap: 6px; }
-.ad__res-accept {
-  border: none;
-  background: var(--rv-green);
-  color: var(--rv-white);
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-family: var(--rv-font);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-}
-.ad__res-accept:hover { filter: brightness(0.95); }
-.ad__res-reject {
-  border: 1px solid #E5E7EB;
   background: var(--rv-white);
-  color: var(--rv-red);
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-family: var(--rv-font);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
 }
-.ad__res-reject:hover { background: #FEF2F2; }
 
-/* ---- Próximas reservas (legado, sin uso) ---- */
-.ad__upcoming {
+.db__panel-head {
   display: flex;
-  flex-direction: column;
-  gap: var(--rv-space-1);
-}
-.ad__upcoming-item {
-  display: flex;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: var(--rv-space-2);
-  border: 1px solid #E5E7EB;
-  border-radius: var(--rv-radius);
-  padding: 12px var(--rv-space-2);
+  margin-bottom: var(--rv-space-3);
 }
-.ad__upcoming-time {
-  background: var(--rv-cat-blue);
-  color: var(--rv-navy);
-  font-size: 13px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 6px;
-}
-.ad__upcoming-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #3B82F6;
-  color: var(--rv-white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-.ad__upcoming-name { font-size: 14px; color: var(--rv-text); }
 
-/* ---- Responsive ---- */
-@media (min-width: 900px) {
-  .ad__stats { grid-template-columns: repeat(4, 1fr); }
+.db__panel-head h2 {
+  margin: 0;
+  color: var(--rv-text);
+  font-size: 17px;
+}
+
+.db__panel-head p {
+  margin: 5px 0 0;
+  color: var(--rv-text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.db__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--rv-space-3);
+}
+
+.db__state {
+  display: grid;
+  min-height: 330px;
+  place-items: center;
+  align-content: center;
+  gap: var(--rv-space-1);
+  border: 1px solid #E5E7EB;
+  border-radius: var(--rv-radius-lg);
+  padding: var(--rv-space-3);
+  background: var(--rv-white);
+  color: var(--rv-text-muted);
+  text-align: center;
+}
+
+.db__state h2,
+.db__state p {
+  margin: 0;
+}
+
+.db__state--error {
+  border-color: #FCA5A5;
+}
+
+.db__state--error p {
+  color: var(--rv-red);
+}
+
+.db__spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid #DBEAFE;
+  border-top-color: var(--rv-navy);
+  border-radius: 50%;
+  animation:
+    db-spin
+    0.8s
+    linear
+    infinite;
+}
+
+@keyframes db-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.db__note {
+  border: 1px solid #BFDBFE;
+  border-radius: var(--rv-radius);
+  padding: 12px 14px;
+  background: #EFF6FF;
+  color: #1E40AF;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@media (min-width: 560px) {
+  .db__stats {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 860px) {
+  .db__stats {
+    grid-template-columns:
+      repeat(5, minmax(0, 1fr));
+  }
+
+  .db__grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .db__period {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .ad__header-actions {
+    width: 100%;
+  }
+
+  .ad__header-actions
+  .ad__btn {
+    flex: 1;
+  }
+
+  .db__panel {
+    padding: var(--rv-space-2);
+  }
 }
