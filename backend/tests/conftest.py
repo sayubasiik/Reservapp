@@ -102,3 +102,44 @@ def auth_headers(client, register_user):
             f"Bearer {response.json()['access_token']}"
         )
     }
+
+@pytest.fixture
+def owner_headers(client, register_user):
+    """Sesión de un dueño de negocio: es quien usa el panel administrativo."""
+    register_user(
+        email="dueno@example.com",
+        password="Password123",
+        full_name="Dueño Prueba",
+        role="business_owner",
+    )
+    response = client.post(
+        "/api/auth/login",
+        data={"username": "dueno@example.com", "password": "Password123"},
+    )
+    return {
+        "Authorization": f"Bearer {response.json()['access_token']}"
+    }
+
+
+@pytest.fixture
+def business_with_data(client, owner_headers):
+    """Crea un negocio con un recurso y una reserva, para probar métricas."""
+    business = client.post(
+        "/api/businesses/",
+        json={"name": "Negocio Prueba", "category": "Belleza"},
+        headers=owner_headers,
+    ).json()
+
+    resource = client.post(
+        "/api/resources/",
+        json={
+            "name": "Recurso Prueba",
+            "category": "Sala",
+            "capacity": 4,
+            "price_per_hour": 100,
+            "business_id": business["id"],
+        },
+        headers=owner_headers,
+    ).json()
+
+    return {"business": business, "resource": resource}
