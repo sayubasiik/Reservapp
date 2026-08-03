@@ -466,9 +466,7 @@ export default function AdminReports() {
                     Recursos destacados
                   </h2>
                   <p>
-                    Los cinco recursos con
-                    más reservaciones
-                    activas.
+                    Los cinco recursos con más reservaciones no canceladas.
                   </p>
                 </div>
               </div>

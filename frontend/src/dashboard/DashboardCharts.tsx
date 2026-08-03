@@ -411,8 +411,7 @@ export function TopResources({
   if (items.length === 0) {
     return (
       <p className="dc__empty">
-        Aún no hay recursos con
-        reservaciones activas.
+        Aún no hay recursos con reservaciones no canceladas.
       </p>
     );
   }

@@ -366,8 +366,7 @@ export default function AdminDashboard() {
                     Recursos más reservados
                   </h2>
                   <p>
-                    Clasificación basada en
-                    reservaciones activas.
+                    Clasificación basada en reservaciones no canceladas.
                   </p>
                 </div>
               </div>
