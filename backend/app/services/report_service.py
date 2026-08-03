@@ -192,7 +192,7 @@ def generar_pdf_reservas(resumen: dict, usuario: User) -> bytes:
     elementos = [
         Paragraph("ReservApp — Reporte de reservas", estilo["titulo"]),
         Paragraph(
-            f"Alcance: {alcance} &nbsp;·&nbsp; Periodo: ultimos "
+            f"Alcance: {alcance} &nbsp;·&nbsp; Ventana analizada: "
             f"{resumen['dias']} dias &nbsp;·&nbsp; Generado: {generado}",
             estilo["subtitulo"],
         ),

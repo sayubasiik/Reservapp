@@ -143,3 +143,18 @@ def business_with_data(client, owner_headers):
     ).json()
 
     return {"business": business, "resource": resource}
+
+
+@pytest.fixture
+def db_session():
+    """
+    Sesion directa a la BD de pruebas.
+
+    Sirve para preparar estados que la API no expone, como marcar una
+    reserva como 'completed' (no existe endpoint para completar una reserva).
+    """
+    session = TestingSessionLocal()
+    try:
+        yield session
+    finally:
+        session.close()

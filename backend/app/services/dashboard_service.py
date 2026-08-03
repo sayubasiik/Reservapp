@@ -15,9 +15,11 @@ from app.models.reservation import Reservation
 from app.models.resource import Resource
 from app.models.user import User
 
-# Estados que representan una reserva vigente o cumplida.
-# Una reserva cancelada no genera ingreso ni ocupa el recurso.
-ESTADOS_ACTIVOS = ("pending", "confirmed", "completed")
+# Una reserva "activa" ocupa el recurso hacia adelante: solo pending y confirmed.
+# Una "completed" ya ocurrio, asi que no ocupa el recurso pero si genero ingreso.
+# Una "cancelled" no cuenta para ninguna de las dos.
+ESTADOS_ACTIVOS = ("pending", "confirmed")
+ESTADOS_CON_INGRESO = ("pending", "confirmed", "completed")
 
 
 def _asegurar_utc(valor: datetime) -> datetime:
@@ -56,7 +58,7 @@ def _calcular_ingreso(reserva: Reservation, recurso: Resource) -> Decimal:
     Ingreso estimado: horas de uso por precio por hora.
     Es una estimacion, no un cobro: el sistema no procesa pagos todavia.
     """
-    if reserva.status not in ESTADOS_ACTIVOS:
+    if reserva.status not in ESTADOS_CON_INGRESO:
         return Decimal("0")
 
     inicio = _asegurar_utc(reserva.start_time)
@@ -83,6 +85,7 @@ def construir_resumen(db: Session, usuario: User, dias: int = 30) -> dict:
 
     total = len(filas)
     ingreso_total = Decimal("0")
+    con_ingreso = 0
     activas = 0
     proximas = 0
     por_estado: Counter[str] = Counter()
@@ -98,9 +101,14 @@ def construir_resumen(db: Session, usuario: User, dias: int = 30) -> dict:
         por_categoria[recurso.category or "Sin categoria"] += 1
         ingreso_total += _calcular_ingreso(reserva, recurso)
 
+        # "Con ingreso" = no cancelada. Es tambien lo que cuenta como uso real
+        # del recurso y la base del promedio de ingreso.
+        if estado in ESTADOS_CON_INGRESO:
+            con_ingreso += 1
+            uso_recurso[recurso.name] += 1
+
         if estado in ESTADOS_ACTIVOS:
             activas += 1
-            uso_recurso[recurso.name] += 1
             if inicio >= ahora:
                 proximas += 1
 
@@ -114,9 +122,11 @@ def construir_resumen(db: Session, usuario: User, dias: int = 30) -> dict:
         dia = (desde + timedelta(days=desplazamiento)).date()
         serie.append({"fecha": dia, "reservas": por_dia.get(dia, 0)})
 
+    # El promedio se calcula solo sobre las reservas que generan ingreso.
+    # Dividir entre el total (incluyendo canceladas) lo subestimaria.
     promedio = (
-        (ingreso_total / Decimal(total)).quantize(Decimal("0.01"))
-        if total
+        (ingreso_total / Decimal(con_ingreso)).quantize(Decimal("0.01"))
+        if con_ingreso
         else Decimal("0")
     )
 

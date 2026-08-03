@@ -178,3 +178,102 @@ def test_pdf_rechaza_clientes(client, auth_headers):
     """El reporte tiene el mismo control de acceso que el panel."""
     respuesta = client.get("/api/dashboard/report.pdf", headers=auth_headers)
     assert respuesta.status_code == 403
+
+
+def test_completed_cuenta_ingreso_pero_no_activa(
+    client, owner_headers, business_with_data, db_session
+):
+    """
+    Una reserva 'completed' ya ocurrio: genera ingreso pero no cuenta como
+    activa. No hay endpoint para completar, asi que se marca el estado
+    directo en la BD (estado sintetico, solo para la prueba).
+    """
+    from app.models.reservation import Reservation
+
+    recurso = business_with_data["resource"]
+    creada = _crear_reserva(
+        client,
+        owner_headers,
+        recurso["id"],
+        "2030-06-01T10:00:00+00:00",
+        "2030-06-01T12:00:00+00:00",
+    )
+    reserva_id = creada.json()["id"]
+
+    reserva = db_session.get(Reservation, reserva_id)
+    reserva.status = "completed"
+    db_session.commit()
+
+    ind = client.get(
+        "/api/dashboard/summary", headers=owner_headers
+    ).json()["indicadores"]
+
+    assert ind["reservas_totales"] == 1
+    assert ind["reservas_activas"] == 0              # completed no es activa
+    assert float(ind["ingreso_estimado"]) == 200.0   # pero si genera ingreso
+    assert float(ind["ingreso_promedio"]) == 200.0   # promedio sobre 1 con ingreso
+
+
+def test_cancelada_no_entra_en_promedio(
+    client, owner_headers, business_with_data
+):
+    """
+    El ingreso promedio se divide solo entre las reservas que generan ingreso.
+    Una cancelada no debe bajar el promedio.
+    """
+    recurso = business_with_data["resource"]
+
+    # Activa: 2h * 100 = 200 de ingreso.
+    _crear_reserva(
+        client,
+        owner_headers,
+        recurso["id"],
+        "2030-06-01T10:00:00+00:00",
+        "2030-06-01T12:00:00+00:00",
+    )
+    # Segunda reserva, en otro dia, que luego cancelamos.
+    creada = _crear_reserva(
+        client,
+        owner_headers,
+        recurso["id"],
+        "2030-06-02T10:00:00+00:00",
+        "2030-06-02T12:00:00+00:00",
+    )
+    client.delete(
+        f"/api/reservations/{creada.json()['id']}", headers=owner_headers
+    )
+
+    ind = client.get(
+        "/api/dashboard/summary", headers=owner_headers
+    ).json()["indicadores"]
+
+    assert ind["reservas_totales"] == 2
+    assert float(ind["ingreso_estimado"]) == 200.0
+    # Se divide entre 1 (la que genera ingreso), no entre 2.
+    assert float(ind["ingreso_promedio"]) == 200.0
+
+
+def test_promedio_cero_sin_reservas_con_ingreso(
+    client, owner_headers, business_with_data
+):
+    """
+    Si no queda ninguna reserva con ingreso, el promedio es 0 y no truena
+    por division entre cero.
+    """
+    recurso = business_with_data["resource"]
+    creada = _crear_reserva(
+        client,
+        owner_headers,
+        recurso["id"],
+        "2030-06-01T10:00:00+00:00",
+        "2030-06-01T12:00:00+00:00",
+    )
+    client.delete(
+        f"/api/reservations/{creada.json()['id']}", headers=owner_headers
+    )
+
+    ind = client.get(
+        "/api/dashboard/summary", headers=owner_headers
+    ).json()["indicadores"]
+
+    assert float(ind["ingreso_promedio"]) == 0.0
