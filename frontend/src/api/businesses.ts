@@ -1,4 +1,8 @@
 import { apiClient } from './client';
+import {
+  normalizeBusiness,
+  normalizeBusinesses,
+} from './normalizers';
 
 import type {
   Business,
@@ -17,19 +21,16 @@ export async function listBusinesses(
   params: ListBusinessesParams = {},
 ): Promise<Business[]> {
   const category = params.category?.trim();
-
-  const response = await apiClient.get<Business[]>(
+  const response = await apiClient.get<unknown>(
     '/businesses/',
     {
       params: category
-        ? {
-            category,
-          }
+        ? { category }
         : undefined,
     },
   );
 
-  return response.data;
+  return normalizeBusinesses(response.data);
 }
 
 /**
@@ -38,28 +39,25 @@ export async function listBusinesses(
 export async function getBusiness(
   businessId: number,
 ): Promise<Business> {
-  const response = await apiClient.get<Business>(
+  const response = await apiClient.get<unknown>(
     `/businesses/${businessId}`,
   );
 
-  return response.data;
+  return normalizeBusiness(response.data);
 }
 
 /**
  * Creates a business using the current JWT.
- *
- * A business_owner must not send owner_id because the
- * backend assigns the authenticated user automatically.
  */
 export async function createBusiness(
   input: BusinessCreate,
 ): Promise<Business> {
-  const response = await apiClient.post<Business>(
+  const response = await apiClient.post<unknown>(
     '/businesses/',
     input,
   );
 
-  return response.data;
+  return normalizeBusiness(response.data);
 }
 
 /**
@@ -69,29 +67,28 @@ export async function updateBusiness(
   businessId: number,
   input: BusinessUpdate,
 ): Promise<Business> {
-  const response = await apiClient.patch<Business>(
+  const response = await apiClient.patch<unknown>(
     `/businesses/${businessId}`,
     input,
   );
 
-  return response.data;
+  return normalizeBusiness(response.data);
 }
 
 /**
- * Finds the first active business owned by a specific user.
- *
- * This lets the frontend recover the business id after login
- * from another browser or after local storage is cleared.
+ * Finds the active business owned by the authenticated user.
  */
 export async function findOwnedBusiness(
   ownerId: number,
 ): Promise<Business | null> {
   const businesses = await listBusinesses();
+  const normalizedOwnerId = Number(ownerId);
 
   return (
     businesses.find(
       (business) =>
-        business.owner_id === ownerId,
+        Number(business.owner_id) ===
+        normalizedOwnerId,
     ) ?? null
   );
 }

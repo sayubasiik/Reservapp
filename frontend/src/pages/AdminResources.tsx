@@ -223,29 +223,20 @@ export default function AdminResources() {
       setIsSaving(true);
 
       if (editing) {
-        const updated = await updateResource(
+        await updateResource(
           editing.id,
           payload,
         );
-
-        setResources((current) =>
-          current.map((resource) =>
-            resource.id === updated.id
-              ? updated
-              : resource,
-          ),
-        );
       } else {
-        const created = await createResource({
+        await createResource({
           ...payload,
           business_id: businessId,
         });
-
-        setResources((current) => [
-          ...current,
-          created,
-        ]);
       }
+
+      // Volvemos a consultar la fuente oficial para no
+      // renderizar respuestas parciales del POST/PATCH.
+      await loadResources();
 
       setModalOpen(false);
       setEditing(null);

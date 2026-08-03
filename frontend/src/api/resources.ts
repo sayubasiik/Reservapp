@@ -1,4 +1,8 @@
 import { apiClient } from './client';
+import {
+  normalizeResource,
+  normalizeResources,
+} from './normalizers';
 
 import type {
   AvailabilityResponse,
@@ -38,7 +42,7 @@ function assertValidDateRange(
     Number.isNaN(endDate.getTime())
   ) {
     throw new Error(
-      'La fecha de inicio o fin no es válida.',
+      'La fecha de inicio o fin no es vÃ¡lida.',
     );
   }
 
@@ -49,9 +53,6 @@ function assertValidDateRange(
   }
 }
 
-/**
- * Obtiene los recursos activos publicados por la API.
- */
 export async function listResources(
   params: ListResourcesParams = {},
 ): Promise<Resource[]> {
@@ -64,25 +65,19 @@ export async function listResources(
     );
   }
 
-  const response =
-    await apiClient.get<Resource[]>(
-      '/resources/',
-      {
-        params: {
-          category:
-            category || undefined,
-          business_id:
-            params.businessId,
-        },
+  const response = await apiClient.get<unknown>(
+    '/resources/',
+    {
+      params: {
+        category: category || undefined,
+        business_id: params.businessId,
       },
-    );
+    },
+  );
 
-  return response.data;
+  return normalizeResources(response.data);
 }
 
-/**
- * Obtiene un recurso por su identificador numérico.
- */
 export async function getResource(
   resourceId: number,
 ): Promise<Resource> {
@@ -91,18 +86,13 @@ export async function getResource(
     'resourceId',
   );
 
-  const response =
-    await apiClient.get<Resource>(
-      `/resources/${resourceId}`,
-    );
+  const response = await apiClient.get<unknown>(
+    `/resources/${resourceId}`,
+  );
 
-  return response.data;
+  return normalizeResource(response.data);
 }
 
-/**
- * Consulta si un recurso está disponible
- * durante el intervalo solicitado.
- */
 export async function getResourceAvailability(
   resourceId: number,
   start: string,
@@ -112,27 +102,19 @@ export async function getResourceAvailability(
     resourceId,
     'resourceId',
   );
-
   assertValidDateRange(start, end);
 
   const response =
     await apiClient.get<AvailabilityResponse>(
       `/resources/${resourceId}/availability`,
       {
-        params: {
-          start,
-          end,
-        },
+        params: { start, end },
       },
     );
 
   return response.data;
 }
 
-/**
- * Crea un recurso dentro de un negocio
- * administrado por el usuario autenticado.
- */
 export async function createResource(
   input: ResourceCreate,
 ): Promise<Resource> {
@@ -141,19 +123,14 @@ export async function createResource(
     'business_id',
   );
 
-  const response =
-    await apiClient.post<Resource>(
-      '/resources/',
-      input,
-    );
+  const response = await apiClient.post<unknown>(
+    '/resources/',
+    input,
+  );
 
-  return response.data;
+  return normalizeResource(response.data);
 }
 
-/**
- * Actualiza un recurso administrable
- * por el usuario autenticado.
- */
 export async function updateResource(
   resourceId: number,
   input: ResourceUpdate,
@@ -163,11 +140,10 @@ export async function updateResource(
     'resourceId',
   );
 
-  const response =
-    await apiClient.patch<Resource>(
-      `/resources/${resourceId}`,
-      input,
-    );
+  const response = await apiClient.patch<unknown>(
+    `/resources/${resourceId}`,
+    input,
+  );
 
-  return response.data;
+  return normalizeResource(response.data);
 }

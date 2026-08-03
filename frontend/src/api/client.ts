@@ -1,4 +1,4 @@
-﻿import axios from 'axios';
+import axios from 'axios';
 
 import { API_BASE_URL } from './config';
 import type {
@@ -48,6 +48,9 @@ apiClient.interceptors.response.use(
       error.response?.status === 401
     ) {
       tokenStore.clear();
+      window.dispatchEvent(
+        new Event('reservapp:unauthorized'),
+      );
     }
 
     return Promise.reject(error);
