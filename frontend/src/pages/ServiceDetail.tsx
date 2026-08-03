@@ -1,187 +1,292 @@
-import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import {
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
+
+import {
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
+
+import { getApiError } from '../api/client';
+import {
+  getCatalogItem,
+} from '../catalog/catalog';
 import Navbar from '../components/Navbar';
-import { serviceDetails } from '../data/serviceDetailData';
-import type { Review } from '../types';
-import { useStore } from '../store/StoreContext';
-import { businessIdForService } from '../data/businesses';
-import { waLink } from '../utils/whatsapp';
+
+import type {
+  CatalogItem,
+} from '../catalog/catalog';
+
 import '../styles/variables.css';
 import './ServiceDetail.css';
 
-// Convierte un usuario/URL en un enlace absoluto a la red social.
-function socialUrl(base: string, value: string): string {
-  const v = value.trim();
-  if (/^https?:\/\//i.test(v)) return v;
-  return `https://${base}/${v.replace(/^@/, '')}`;
-}
-
-// Pantalla 5/12 — Detalle del Servicio
-export default function ServiceDetail() {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const { getProfile } = useStore();
-  const service = id ? serviceDetails[id] : undefined;
-  const profile = id ? getProfile(businessIdForService(id)) : {};
-
-  // Usuario actual (vendría del AuthContext)
-  const userName = 'Olaf A.';
-  const userInitials = 'OA';
-
-  const [extraReviews, setExtraReviews] = useState<Review[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [formComment, setFormComment] = useState('');
-  const [formRating, setFormRating] = useState(5);
-
-  if (!service) {
-    return (
-      <div className="sd">
-        <Navbar />
-        <main className="sd__container">
-          <p>Servicio no encontrado.</p>
-        </main>
-      </div>
-    );
+function formatPrice(
+  pricePerHour: number,
+): string {
+  if (pricePerHour === 0) {
+    return 'Sin costo';
   }
 
-  const allReviews = [...service.reviews, ...extraReviews];
+  return new Intl.NumberFormat(
+    'es-MX',
+    {
+      style: 'currency',
+      currency: 'MXN',
+    },
+  ).format(pricePerHour);
+}
 
-  const handleSubmitReview = () => {
-    const newReview: Review = {
-      id: `user-${Date.now()}`,
-      initials: userInitials,
-      name: userName,
-      rating: formRating,
-      comment: formComment.trim() || undefined,
-    };
-    setExtraReviews((prev) => [newReview, ...prev]);
-    setFormComment('');
-    setFormRating(5);
-    setShowForm(false);
-  };
+function phoneHref(
+  phone: string,
+): string {
+  return `tel:${phone.replace(
+    /[^\d+]/g,
+    '',
+  )}`;
+}
 
-  // Genera estrellas llenas según el rating (redondeado)
-  const stars = (rating: number) => '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
+export default function ServiceDetail() {
+  const { id } =
+    useParams<{ id: string }>();
+
+  const navigate = useNavigate();
+
+  const resourceId =
+    Number(id);
+
+  const validId =
+    Number.isInteger(resourceId) &&
+    resourceId > 0;
+
+  const [item, setItem] =
+    useState<CatalogItem | null>(null);
+
+  const [isLoading, setIsLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState<string | null>(null);
+
+  const loadDetail =
+    useCallback(
+      async () => {
+        if (!validId) {
+          setItem(null);
+          setError(
+            'El identificador del servicio no es válido.',
+          );
+          setIsLoading(false);
+          return;
+        }
+
+        try {
+          setIsLoading(true);
+          setError(null);
+
+          const data =
+            await getCatalogItem(
+              resourceId,
+            );
+
+          setItem(data);
+        } catch (loadError) {
+          setItem(null);
+          setError(
+            getApiError(loadError),
+          );
+        } finally {
+          setIsLoading(false);
+        }
+      },
+      [
+        resourceId,
+        validId,
+      ],
+    );
+
+  useEffect(() => {
+    void loadDetail();
+  }, [loadDetail]);
 
   return (
     <div className="sd">
-      <Navbar />
+      <Navbar active="Servicios" />
 
       <main className="sd__container">
-        {/* Imagen hero con botón de regreso */}
-        <section className="sd__hero">
-          <div
-            className="sd__hero-image"
-            style={{ backgroundImage: `url(${service.image})` }}
-          />
-          <button className="sd__back" onClick={() => navigate(-1)} aria-label="Regresar">
-            ← {service.name}
-          </button>
-        </section>
+        {isLoading && (
+          <section
+            className="sd__state"
+            role="status"
+          >
+            <span className="sd__spinner" />
+            <p>Cargando servicio…</p>
+          </section>
+        )}
 
-        {/* Info principal */}
-        <section className="sd__info">
-          <h1 className="sd__name">{service.name}</h1>
-          <div className="sd__rating-row">
-            <span className="sd__stars">{stars(service.rating)}</span>
-            <span className="sd__review-count">({service.reviewCount + extraReviews.length} reseñas)</span>
-          </div>
-          <p className="sd__address">
-            <span className="sd__address-icon">📍</span> {service.address}
-          </p>
+        {!isLoading && error && (
+          <section
+            className="sd__state sd__state--error"
+            role="alert"
+          >
+            <h1>
+              No pudimos abrir el servicio
+            </h1>
 
-          {/* Redes sociales del negocio (si el admin las configuró) */}
-          {(profile.instagram || profile.facebook || profile.whatsapp) && (
-            <div className="sd__social">
-              {profile.instagram && (
-                <a className="sd__social-link" href={socialUrl('instagram.com', profile.instagram)} target="_blank" rel="noopener noreferrer">📷 Instagram</a>
-              )}
-              {profile.facebook && (
-                <a className="sd__social-link" href={socialUrl('facebook.com', profile.facebook)} target="_blank" rel="noopener noreferrer">📘 Facebook</a>
-              )}
-              {profile.whatsapp && (
-                <a className="sd__social-link" href={waLink(profile.whatsapp)} target="_blank" rel="noopener noreferrer">🟢 WhatsApp</a>
-              )}
-            </div>
-          )}
-        </section>
+            <p>{error}</p>
 
-        {/* Descripción */}
-        <section className="sd__section">
-          <h2 className="sd__section-title">Descripción</h2>
-          <p className="sd__description">{service.description}</p>
-        </section>
-
-        {/* Precio y duración */}
-        <div className="sd__meta">
-          <div className="sd__meta-card">
-            <span className="sd__meta-label">Precio</span>
-            <span className="sd__meta-value">${service.price}</span>
-          </div>
-          <div className="sd__meta-card">
-            <span className="sd__meta-label">Duración</span>
-            <span className="sd__meta-value">{service.duration}</span>
-          </div>
-        </div>
-
-        {/* Botón reservar */}
-        <button className="sd__reserve-btn" onClick={() => navigate(`/reservar/${service.id}/fecha`)}>
-          Reservar ahora
-        </button>
-
-        {/* Reseñas recientes */}
-        <section className="sd__section">
-          <div className="sd__section-head">
-            <h2 className="sd__section-title">Reseñas recientes</h2>
-            <button className="sd__add-review-btn" onClick={() => setShowForm((v) => !v)}>
-              {showForm ? 'Cancelar' : '+ Añadir reseña'}
-            </button>
-          </div>
-
-          {/* Formulario de nueva reseña */}
-          {showForm && (
-            <div className="sd__review-form">
-              <div className="sd__review-rating-picker">
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <button
-                    key={n}
-                    className={`sd__review-star-btn ${n <= formRating ? 'is-filled' : ''}`}
-                    onClick={() => setFormRating(n)}
-                  >
-                    ★
-                  </button>
-                ))}
-              </div>
-              <input
-                type="text"
-                className="sd__review-input"
-                placeholder="Escribe un comentario corto..."
-                maxLength={120}
-                value={formComment}
-                onChange={(e) => setFormComment(e.target.value)}
-              />
-              <button className="sd__review-submit" onClick={handleSubmitReview}>
-                Publicar
+            <div className="sd__state-actions">
+              <button
+                type="button"
+                className="sd__secondary-btn"
+                onClick={() =>
+                  navigate('/buscar')
+                }
+              >
+                Volver a buscar
               </button>
-            </div>
-          )}
 
-          <div className="sd__reviews">
-            {allReviews.map((review) => (
-              <div key={review.id} className="sd__review">
-                <div className="sd__review-avatar">{review.initials}</div>
-                <div className="sd__review-body">
-                  <span className="sd__review-name">{review.name}</span>
-                  <span className="sd__review-stars">{stars(review.rating)}</span>
-                  {review.comment && <p className="sd__review-comment">{review.comment}</p>}
+              {validId && (
+                <button
+                  type="button"
+                  className="sd__primary-btn"
+                  onClick={() =>
+                    void loadDetail()
+                  }
+                >
+                  Reintentar
+                </button>
+              )}
+            </div>
+          </section>
+        )}
+
+        {!isLoading &&
+          !error &&
+          item && (
+            <>
+              <section className="sd__hero">
+                <div className="sd__hero-image">
+                  <span className="sd__hero-initial">
+                    {item.category
+                      .trim()
+                      .charAt(0)
+                      .toUpperCase() ||
+                      'R'}
+                  </span>
+
+                  <span className="sd__hero-category">
+                    {item.category}
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  className="sd__back"
+                  onClick={() =>
+                    navigate(-1)
+                  }
+                >
+                  ← Regresar
+                </button>
+              </section>
+
+              <section className="sd__info">
+                <span className="sd__business">
+                  {item.businessName}
+                </span>
+
+                <h1 className="sd__name">
+                  {item.resourceName}
+                </h1>
+
+                <p className="sd__address">
+                  {item.address}
+                </p>
+
+                {item.phone && (
+                  <a
+                    className="sd__phone"
+                    href={phoneHref(
+                      item.phone,
+                    )}
+                  >
+                    Contactar: {item.phone}
+                  </a>
+                )}
+              </section>
+
+              <section className="sd__section">
+                <h2 className="sd__section-title">
+                  Descripción
+                </h2>
+
+                <p className="sd__description">
+                  {item.description ||
+                    'El negocio no ha agregado una descripción para este recurso.'}
+                </p>
+              </section>
+
+              <div className="sd__meta">
+                <div className="sd__meta-card">
+                  <span className="sd__meta-label">
+                    Precio por hora
+                  </span>
+
+                  <strong className="sd__meta-value">
+                    {formatPrice(
+                      item.pricePerHour,
+                    )}
+                  </strong>
+                </div>
+
+                <div className="sd__meta-card">
+                  <span className="sd__meta-label">
+                    Capacidad
+                  </span>
+
+                  <strong className="sd__meta-value">
+                    {item.capacity}
+                  </strong>
+                </div>
+
+                <div className="sd__meta-card">
+                  <span className="sd__meta-label">
+                    Categoría
+                  </span>
+
+                  <strong className="sd__meta-value sd__meta-value--text">
+                    {item.category}
+                  </strong>
                 </div>
               </div>
-            ))}
-          </div>
-        </section>
+
+              <button
+                type="button"
+                className="sd__reserve-btn"
+                onClick={() =>
+                  navigate(
+                    `/reservar/${item.resourceId}`,
+                  )
+                }
+              >
+                Seleccionar fecha y hora
+              </button>
+
+              <p className="sd__reserve-note">
+                Comprobaremos la disponibilidad
+                antes de confirmar la reserva.
+              </p>
+            </>
+          )}
       </main>
 
-      <footer className="sd__footer">reservvap.com/servicio/{service.id}</footer>
+      <footer className="sd__footer">
+        {item
+          ? `reservapp.com/servicio/${item.resourceId}`
+          : 'reservapp.com/servicio'}
+      </footer>
     </div>
   );
 }

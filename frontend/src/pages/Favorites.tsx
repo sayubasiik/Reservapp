@@ -89,7 +89,7 @@ export default function Favorites() {
         )}
       </main>
 
-      <footer className="fv__footer">reservvap.com/favoritos</footer>
+      <footer className="fv__footer">reservapp.com/favoritos</footer>
     </div>
   );
 }

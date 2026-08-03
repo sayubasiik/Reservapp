@@ -311,3 +311,62 @@
   color: var(--rv-text-light);
   font-size: 12px;
 }
+
+.auth__role-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth__role-icon svg {
+  display: block;
+}
+
+.auth__alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+}
+
+.auth__alert-icon {
+  flex: 0 0 auto;
+  margin-top: 0.1rem;
+}
+/* Registro y recuperacion de negocio real */
+.auth__textarea {
+  min-height: 108px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.auth__optional {
+  color: var(--rv-text-muted);
+  font-weight: 500;
+}
+
+.auth__setup-icon {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto var(--rv-space-2);
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: rgba(30, 58, 138, 0.08);
+  color: var(--rv-navy);
+}
+
+.auth__link-button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--rv-navy);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.auth__link-button:hover {
+  text-decoration: underline;
+}

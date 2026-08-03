@@ -1,133 +1,368 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+
+import {
+  useSearchParams,
+} from 'react-router-dom';
+
+import { useCatalog } from '../catalog/useCatalog';
+import CatalogCard from '../components/CatalogCard';
 import Navbar from '../components/Navbar';
-import { searchResults, recentSearches } from '../data/exploreData';
+
 import '../styles/variables.css';
 import './Search.css';
 
-// Quita acentos y pasa a minúsculas para comparar sin importar tildes.
-const norm = (s: string) =>
-  s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+function normalize(
+  value: string,
+): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(
+      /[\u0300-\u036f]/g,
+      '',
+    );
+}
 
-// Categorías disponibles como filtros rápidos (a partir de los resultados).
-const CATEGORIES = Array.from(new Set(searchResults.map((r) => r.category)));
-
-// Pantalla 13/20 — Búsqueda (resultados)
 export default function Search() {
-  const navigate = useNavigate();
-  const [params, setParams] = useSearchParams();
+  const [
+    params,
+    setParams,
+  ] = useSearchParams();
 
-  const [query, setQuery] = useState(params.get('q') ?? '');
-  const [category, setCategory] = useState(params.get('cat') ?? '');
+  const {
+    items,
+    isLoading,
+    error,
+    reload,
+  } = useCatalog();
 
-  // Si se llega desde otra pantalla con ?q= o ?cat=, sincroniza el estado.
+  const [query, setQuery] =
+    useState(
+      params.get('q') ?? '',
+    );
+
+  const [category, setCategory] =
+    useState(
+      params.get('cat') ?? '',
+    );
+
   useEffect(() => {
-    setQuery(params.get('q') ?? '');
-    setCategory(params.get('cat') ?? '');
+    setQuery(
+      params.get('q') ?? '',
+    );
+
+    setCategory(
+      params.get('cat') ?? '',
+    );
   }, [params]);
 
-  // Mantiene la URL en sync (para poder compartir/recargar la búsqueda).
-  const updateQuery = (q: string) => {
-    setQuery(q);
-    const next = new URLSearchParams(params);
-    if (q) next.set('q', q); else next.delete('q');
-    setParams(next, { replace: true });
+  const categories =
+    useMemo(
+      () =>
+        Array.from(
+          new Set(
+            items.map(
+              (item) =>
+                item.category,
+            ),
+          ),
+        ).sort(
+          (left, right) =>
+            left.localeCompare(
+              right,
+              'es',
+            ),
+        ),
+      [items],
+    );
+
+  const results =
+    useMemo(
+      () => {
+        const normalizedQuery =
+          normalize(query);
+
+        const normalizedCategory =
+          normalize(category);
+
+        return items.filter(
+          (item) => {
+            const searchable = [
+              item.resourceName,
+              item.businessName,
+              item.category,
+              item.address,
+              item.description,
+            ]
+              .map(normalize)
+              .join(' ');
+
+            const matchesText =
+              !normalizedQuery ||
+              searchable.includes(
+                normalizedQuery,
+              );
+
+            const matchesCategory =
+              !normalizedCategory ||
+              normalize(
+                item.category,
+              ) ===
+                normalizedCategory;
+
+            return (
+              matchesText &&
+              matchesCategory
+            );
+          },
+        );
+      },
+      [
+        items,
+        query,
+        category,
+      ],
+    );
+
+  const updateQuery = (
+    value: string,
+  ) => {
+    setQuery(value);
+
+    const next =
+      new URLSearchParams(params);
+
+    if (value.trim()) {
+      next.set('q', value);
+    } else {
+      next.delete('q');
+    }
+
+    setParams(
+      next,
+      {
+        replace: true,
+      },
+    );
   };
 
-  const toggleCategory = (c: string) => {
-    const next = new URLSearchParams(params);
-    if (category === c) { setCategory(''); next.delete('cat'); }
-    else { setCategory(c); next.set('cat', c); }
-    setParams(next, { replace: true });
-  };
+  const selectCategory = (
+    value: string,
+  ) => {
+    setCategory(value);
 
-  // Filtrado real por texto (nombre, categoría o dirección) y por categoría.
-  const results = useMemo(() => {
-    const q = norm(query.trim());
-    return searchResults.filter((r) => {
-      const matchesText =
-        !q || norm(r.name).includes(q) || norm(r.category).includes(q) || norm(r.address).includes(q);
-      const matchesCat = !category || norm(r.category) === norm(category);
-      return matchesText && matchesCat;
-    });
-  }, [query, category]);
+    const next =
+      new URLSearchParams(params);
+
+    if (value) {
+      next.set('cat', value);
+    } else {
+      next.delete('cat');
+    }
+
+    setParams(
+      next,
+      {
+        replace: true,
+      },
+    );
+  };
 
   return (
     <div className="se">
       <Navbar active="Servicios" />
 
       <main className="se__container">
-        {/* Barra de búsqueda */}
+        <header className="se__header">
+          <h1>Buscar servicios</h1>
+
+          <p>
+            Consulta recursos publicados por
+            negocios registrados.
+          </p>
+        </header>
+
         <div className="se__searchbar">
-          <span className="se__search-icon">🔍</span>
+          <span
+            className="se__search-icon"
+            aria-hidden="true"
+          >
+            ⌕
+          </span>
+
           <input
+            type="search"
             className="se__search-input"
             value={query}
-            onChange={(e) => updateQuery(e.target.value)}
-            placeholder="Buscar servicio, lugar..."
+            onChange={(event) =>
+              updateQuery(
+                event.target.value,
+              )
+            }
+            placeholder="Servicio, negocio, categoría o dirección"
             autoFocus
           />
+
           {query && (
-            <button className="se__clear" onClick={() => updateQuery('')} aria-label="Limpiar">✕</button>
+            <button
+              type="button"
+              className="se__clear"
+              onClick={() =>
+                updateQuery('')
+              }
+              aria-label="Limpiar búsqueda"
+            >
+              Limpiar
+            </button>
           )}
         </div>
 
-        {/* Filtros por categoría */}
-        <div className="se__filters">
-          {CATEGORIES.map((c) => (
-            <button
-              key={c}
-              className={`se__filter ${category === c ? 'se__filter--primary' : ''}`}
-              onClick={() => toggleCategory(c)}
+        {!isLoading &&
+          !error &&
+          categories.length > 0 && (
+            <div
+              className="se__filters"
+              aria-label="Filtros por categoría"
             >
-              {c}
-            </button>
-          ))}
-        </div>
+              <button
+                type="button"
+                className={
+                  `se__filter ${
+                    !category
+                      ? 'se__filter--primary'
+                      : ''
+                  }`
+                }
+                onClick={() =>
+                  selectCategory('')
+                }
+              >
+                Todas
+              </button>
 
-        {/* Búsquedas recientes (solo si no hay texto escrito) */}
-        {!query && (
-          <section className="se__section">
-            <h2 className="se__section-title">Búsquedas recientes</h2>
-            <div className="se__chips">
-              {recentSearches.map((r) => (
-                <button key={r} className="se__chip" onClick={() => updateQuery(r)}>
-                  {r} <span className="se__chip-x">🔍</span>
-                </button>
-              ))}
+              {categories.map(
+                (itemCategory) => (
+                  <button
+                    type="button"
+                    key={itemCategory}
+                    className={
+                      `se__filter ${
+                        category ===
+                        itemCategory
+                          ? 'se__filter--primary'
+                          : ''
+                      }`
+                    }
+                    onClick={() =>
+                      selectCategory(
+                        itemCategory,
+                      )
+                    }
+                  >
+                    {itemCategory}
+                  </button>
+                ),
+              )}
             </div>
+          )}
+
+        {isLoading && (
+          <section
+            className="se__state"
+            role="status"
+          >
+            <span className="se__spinner" />
+            <p>Cargando resultados…</p>
           </section>
         )}
 
-        {/* Resultados */}
-        <h2 className="se__section-title">Resultados ({results.length})</h2>
-        {results.length === 0 ? (
-          <p className="se__empty">
-            No encontramos servicios para “{query || category}”. Prueba con otra palabra.
-          </p>
-        ) : (
-          <div className="se__results">
-            {results.map((r) => (
-              <article
-                key={r.id}
-                className="se__result"
-                onClick={() => navigate(`/servicio/${r.id}`)}
-              >
-                <div className={`se__result-thumb se__result-thumb--${r.color}`}>🖼️</div>
-                <div className="se__result-body">
-                  <h3 className="se__result-name">{r.name}</h3>
-                  <p className="se__result-meta">{r.category} · {r.address}</p>
-                  <p className="se__result-price">
-                    Desde ${r.price} <span className="se__result-rating">★ {r.rating}</span>
+        {!isLoading && error && (
+          <section
+            className="se__state se__state--error"
+            role="alert"
+          >
+            <h2>
+              No pudimos consultar el catálogo
+            </h2>
+
+            <p>{error}</p>
+
+            <button
+              type="button"
+              className="se__retry"
+              onClick={() =>
+                void reload()
+              }
+            >
+              Reintentar
+            </button>
+          </section>
+        )}
+
+        {!isLoading &&
+          !error && (
+            <section>
+              <div className="se__results-head">
+                <h2 className="se__section-title">
+                  Resultados
+                </h2>
+
+                <span>
+                  {results.length}
+                  {' '}
+                  {results.length === 1
+                    ? 'servicio'
+                    : 'servicios'}
+                </span>
+              </div>
+
+              {items.length === 0 ? (
+                <div className="se__empty">
+                  <h3>
+                    Aún no hay servicios publicados
+                  </h3>
+
+                  <p>
+                    Actualiza la página cuando un
+                    negocio haya creado recursos.
                   </p>
                 </div>
-              </article>
-            ))}
-          </div>
-        )}
+              ) : results.length === 0 ? (
+                <div className="se__empty">
+                  <h3>
+                    No encontramos coincidencias
+                  </h3>
+
+                  <p>
+                    Prueba otra palabra o elimina
+                    el filtro seleccionado.
+                  </p>
+                </div>
+              ) : (
+                <div className="se__results">
+                  {results.map(
+                    (item) => (
+                      <CatalogCard
+                        key={item.resourceId}
+                        item={item}
+                        variant="list"
+                      />
+                    ),
+                  )}
+                </div>
+              )}
+            </section>
+          )}
       </main>
 
-      <footer className="se__footer">reservvap.com/buscar</footer>
+      <footer className="se__footer">
+        reservapp.com/buscar
+      </footer>
     </div>
   );
 }

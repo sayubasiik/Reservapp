@@ -271,7 +271,7 @@ export default function DateSelect() {
         </div>
       </main>
 
-      <footer className="ds__footer">reservvap.com/reservar/fecha</footer>
+      <footer className="ds__footer">reservapp.com/reservar/fecha</footer>
     </div>
   );
 }

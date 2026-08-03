@@ -55,7 +55,7 @@ export default function AdminCalendar() {
   const { reservations, book, getBookingConfig } = useStore();
   const { user } = useAuth();
   const bizId = user?.businessId;
-  const bizName = user?.name;
+  const bizName = user?.businessName ?? user?.name;
 
   // Tipo de reservas del negocio: define qué pide el formulario de alta.
   const cfg = getBookingConfig(bizId, user?.businessType);
