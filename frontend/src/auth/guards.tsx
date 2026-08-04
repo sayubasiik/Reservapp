@@ -27,6 +27,54 @@ function SessionLoader() {
     </div>
   );
 }
+function BusinessResolutionError() {
+  return (
+    <main
+      role="alert"
+      style={{
+        minHeight: '100vh',
+        display: 'grid',
+        placeItems: 'center',
+        padding: '28px',
+        background: '#f4f6fb',
+        fontFamily: 'system-ui, sans-serif',
+      }}
+    >
+      <section
+        style={{
+          width: 'min(620px, 100%)',
+          padding: '26px',
+          borderRadius: '16px',
+          background: '#ffffff',
+          boxShadow:
+            '0 16px 45px rgba(15, 23, 42, .12)',
+        }}
+      >
+        <h1>No pudimos recuperar tu negocio</h1>
+        <p>
+          Tu cuenta sigue activa, pero el panel necesita
+          volver a consultar el negocio asociado antes de
+          mostrar recursos, configuración y reportes.
+        </p>
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          style={{
+            border: 0,
+            borderRadius: '10px',
+            padding: '11px 18px',
+            background: '#1e40af',
+            color: '#ffffff',
+            fontWeight: 700,
+            cursor: 'pointer',
+          }}
+        >
+          Reintentar consulta
+        </button>
+      </section>
+    </main>
+  );
+}
 
 export function RequireAuth({
   children,
@@ -91,6 +139,19 @@ export function RequireAdmin({
     );
   }
 
+
+  if (
+    user.role === 'admin' &&
+    (
+      user.businessLookupFailed ||
+      (
+        !user.needsBusinessSetup &&
+        !user.apiBusinessId
+      )
+    )
+  ) {
+    return <BusinessResolutionError />;
+  }
   const isSetupRoute =
     location.pathname ===
     '/completar-negocio';

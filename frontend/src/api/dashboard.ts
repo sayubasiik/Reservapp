@@ -46,6 +46,183 @@ export interface DashboardReportFile {
   filename: string;
 }
 
+type UnknownRecord = Record<string, unknown>;
+
+function isRecord(
+  value: unknown,
+): value is UnknownRecord {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value)
+  );
+}
+
+function unwrapSummary(
+  value: unknown,
+): UnknownRecord {
+  if (!isRecord(value)) {
+    return {};
+  }
+
+  if (isRecord(value.summary)) {
+    return value.summary;
+  }
+
+  if (isRecord(value.data)) {
+    return value.data;
+  }
+
+  return value;
+}
+
+function numberValue(
+  value: unknown,
+): number {
+  const parsed = Number(value ?? 0);
+  return Number.isFinite(parsed)
+    ? parsed
+    : 0;
+}
+
+function textValue(
+  value: unknown,
+  fallback: string,
+): string {
+  return typeof value === 'string' &&
+    value.trim()
+    ? value.trim()
+    : fallback;
+}
+
+function safeDateTime(
+  value: unknown,
+): string {
+  if (typeof value === 'string') {
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime())) {
+      return value;
+    }
+  }
+
+  return new Date().toISOString();
+}
+
+function arrayValue(
+  value: unknown,
+): unknown[] {
+  return Array.isArray(value)
+    ? value
+    : [];
+}
+
+function normalizeDashboardSummary(
+  value: unknown,
+  requestedDays: number,
+): DashboardSummary {
+  const data = unwrapSummary(value);
+  const indicators = isRecord(data.indicadores)
+    ? data.indicadores
+    : {};
+
+  const porEstado = arrayValue(
+    data.por_estado,
+  )
+    .filter(isRecord)
+    .map((item) => ({
+      estado: textValue(
+        item.estado,
+        'sin_estado',
+      ),
+      total: numberValue(item.total),
+    }));
+
+  const porCategoria = arrayValue(
+    data.por_categoria,
+  )
+    .filter(isRecord)
+    .map((item) => ({
+      categoria: textValue(
+        item.categoria,
+        'Sin categoría',
+      ),
+      total: numberValue(item.total),
+    }));
+
+  const reservasPorDia = arrayValue(
+    data.reservas_por_dia,
+  )
+    .filter(isRecord)
+    .flatMap((item) => {
+      if (typeof item.fecha !== 'string') {
+        return [];
+      }
+
+      const date = new Date(
+        `${item.fecha}T12:00:00`,
+      );
+      if (Number.isNaN(date.getTime())) {
+        return [];
+      }
+
+      return [{
+        fecha: item.fecha,
+        reservas: numberValue(
+          item.reservas,
+        ),
+      }];
+    });
+
+  const recursosTop = arrayValue(
+    data.recursos_top,
+  )
+    .filter(isRecord)
+    .map((item) => ({
+      recurso: textValue(
+        item.recurso,
+        'Recurso',
+      ),
+      reservas: numberValue(
+        item.reservas,
+      ),
+    }));
+
+  return {
+    generado_en: safeDateTime(
+      data.generado_en,
+    ),
+    dias:
+      numberValue(data.dias) > 0
+        ? numberValue(data.dias)
+        : requestedDays,
+    alcance: textValue(
+      data.alcance,
+      'negocio',
+    ),
+    indicadores: {
+      reservas_totales: numberValue(
+        indicators.reservas_totales,
+      ),
+      reservas_activas: numberValue(
+        indicators.reservas_activas,
+      ),
+      reservas_proximas: numberValue(
+        indicators.reservas_proximas,
+      ),
+      ingreso_estimado: numberValue(
+        indicators.ingreso_estimado,
+      ),
+      ingreso_promedio: numberValue(
+        indicators.ingreso_promedio,
+      ),
+    },
+    por_estado: porEstado,
+    por_categoria: porCategoria,
+    reservas_por_dia: reservasPorDia,
+    recursos_top: recursosTop,
+  };
+}
+
 function reportFilename(
   contentDisposition: unknown,
 ): string {
@@ -84,35 +261,32 @@ function reportFilename(
 export async function getDashboardSummary(
   days: number,
 ): Promise<DashboardSummary> {
-  const response =
-    await apiClient.get<DashboardSummary>(
-      '/dashboard/summary',
-      {
-        params: {
-          dias: days,
-        },
-      },
-    );
+  const response = await apiClient.get<unknown>(
+    '/dashboard/summary',
+    {
+      params: { dias: days },
+    },
+  );
 
-  return response.data;
+  return normalizeDashboardSummary(
+    response.data,
+    days,
+  );
 }
 
 export async function getDashboardReport(
   days: number,
 ): Promise<DashboardReportFile> {
-  const response =
-    await apiClient.get<Blob>(
-      '/dashboard/report.pdf',
-      {
-        params: {
-          dias: days,
-        },
-        responseType: 'blob',
-        headers: {
-          Accept: 'application/pdf',
-        },
+  const response = await apiClient.get<Blob>(
+    '/dashboard/report.pdf',
+    {
+      params: { dias: days },
+      responseType: 'blob',
+      headers: {
+        Accept: 'application/pdf',
       },
-    );
+    },
+  );
 
   return {
     blob: response.data,

@@ -175,9 +175,25 @@ function readUiProfile(
       profileKey(userId),
     );
 
-    return raw
-      ? (JSON.parse(raw) as Partial<AuthUser>)
-      : {};
+    if (!raw) {
+      return {};
+    }
+
+    const parsed = JSON.parse(raw) as
+      Partial<AuthUser>;
+
+    // Solo recuperamos preferencias visuales/locales.
+    // Los permisos, el negocio y sus identificadores
+    // siempre se vuelven a resolver desde la API.
+    return {
+      name: parsed.name,
+      initials: parsed.initials,
+      phone: parsed.phone,
+      avatar: parsed.avatar,
+      addresses: parsed.addresses,
+      cards: parsed.cards,
+      notifications: parsed.notifications,
+    };
   } catch {
     return {};
   }
@@ -186,9 +202,19 @@ function readUiProfile(
 function saveUiProfile(
   user: AuthUser,
 ): void {
+  const profile: Partial<AuthUser> = {
+    name: user.name,
+    initials: user.initials,
+    phone: user.phone,
+    avatar: user.avatar,
+    addresses: user.addresses,
+    cards: user.cards,
+    notifications: user.notifications,
+  };
+
   localStorage.setItem(
     profileKey(user.id),
-    JSON.stringify(user),
+    JSON.stringify(profile),
   );
 }
 
@@ -351,10 +377,14 @@ async function resolveOwnedBusiness(
       business,
     );
   } catch {
-    // No confundimos una falla temporal de red
-    // con la ausencia real de un negocio.
+    // No reutilizamos datos operativos guardados en el
+    // navegador cuando falla la consulta del negocio.
     return {
       ...user,
+      apiBusinessId: undefined,
+      businessName: undefined,
+      businessAddress: undefined,
+      businessDescription: undefined,
       needsBusinessSetup: false,
       businessLookupFailed: true,
     };
@@ -444,6 +474,23 @@ export function AuthProvider({
 
     return () => {
       active = false;
+    };
+  }, []);
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      setUser(null);
+    };
+
+    window.addEventListener(
+      'reservapp:unauthorized',
+      handleUnauthorized,
+    );
+
+    return () => {
+      window.removeEventListener(
+        'reservapp:unauthorized',
+        handleUnauthorized,
+      );
     };
   }, []);
 
