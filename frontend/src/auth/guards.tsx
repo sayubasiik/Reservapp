@@ -54,7 +54,7 @@ function BusinessResolutionError() {
         <p>
           Tu cuenta sigue activa, pero el panel necesita
           volver a consultar el negocio asociado antes de
-          mostrar recursos, configuraciÃ³n y reportes.
+          mostrar recursos, configuración y reportes.
         </p>
         <button
           type="button"

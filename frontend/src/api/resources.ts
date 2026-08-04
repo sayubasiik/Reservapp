@@ -42,7 +42,7 @@ function assertValidDateRange(
     Number.isNaN(endDate.getTime())
   ) {
     throw new Error(
-      'La fecha de inicio o fin no es vÃ¡lida.',
+      'La fecha de inicio o fin no es válida.',
     );
   }
 

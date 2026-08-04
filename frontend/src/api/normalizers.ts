@@ -30,7 +30,7 @@ function unwrapObject(
   }
 
   throw new Error(
-    'El servidor devolviÃ³ un objeto invÃ¡lido.',
+    'El servidor devolvió un objeto inválido.',
   );
 }
 
@@ -52,7 +52,7 @@ function unwrapArray(
   }
 
   throw new Error(
-    'El servidor devolviÃ³ una lista invÃ¡lida.',
+    'El servidor devolvió una lista inválida.',
   );
 }
 
@@ -66,7 +66,7 @@ function requiredPositiveInteger(
     parsed <= 0
   ) {
     throw new Error(
-      `El campo ${field} no contiene un identificador vÃ¡lido.`,
+      `El campo ${field} no contiene un identificador válido.`,
     );
   }
   return parsed;
@@ -95,14 +95,14 @@ function requiredString(
 ): string {
   if (typeof value !== 'string') {
     throw new Error(
-      `El campo ${field} no contiene texto vÃ¡lido.`,
+      `El campo ${field} no contiene texto válido.`,
     );
   }
 
   const normalized = value.trim();
   if (!normalized) {
     throw new Error(
-      `El campo ${field} estÃ¡ vacÃ­o.`,
+      `El campo ${field} está vacío.`,
     );
   }
   return normalized;

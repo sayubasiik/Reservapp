@@ -11,7 +11,7 @@ interface AppErrorBoundaryProps {
 }
 
 interface AppErrorBoundaryState {
-  error: Error | null;
+  hasError: boolean;
 }
 
 export default class AppErrorBoundary extends Component<
@@ -19,13 +19,14 @@ export default class AppErrorBoundary extends Component<
   AppErrorBoundaryState
 > {
   state: AppErrorBoundaryState = {
-    error: null,
+    hasError: false,
   };
 
-  static getDerivedStateFromError(
-    error: Error,
-  ): AppErrorBoundaryState {
-    return { error };
+  static getDerivedStateFromError():
+    AppErrorBoundaryState {
+    return {
+      hasError: true,
+    };
   }
 
   componentDidCatch(
@@ -48,7 +49,7 @@ export default class AppErrorBoundary extends Component<
   };
 
   render() {
-    if (!this.state.error) {
+    if (!this.state.hasError) {
       return this.props.children;
     }
 
@@ -71,8 +72,7 @@ export default class AppErrorBoundary extends Component<
             padding: '28px',
             borderRadius: '18px',
             background: '#ffffff',
-            boxShadow:
-              '0 18px 50px rgba(15, 23, 42, 0.12)',
+            boxShadow: '0 18px 50px rgba(15, 23, 42, 0.12)',
           }}
         >
           <p
@@ -86,28 +86,17 @@ export default class AppErrorBoundary extends Component<
           >
             ReservApp
           </p>
+
           <h1>
-            No fue posible mostrar esta pÃ¡gina
+            No fue posible mostrar esta p&aacute;gina
           </h1>
+
           <p>
-            La sesiÃ³n y tus datos siguen guardados. La
-            interfaz encontrÃ³ una respuesta que no pudo
-            representar correctamente.
+            Ocurri&oacute; un error inesperado al mostrar esta
+            p&aacute;gina. Recarga la aplicaci&oacute;n o vuelve al
+            inicio.
           </p>
-          <details>
-            <summary>Detalle tÃ©cnico</summary>
-            <pre
-              style={{
-                overflow: 'auto',
-                whiteSpace: 'pre-wrap',
-                padding: '14px',
-                borderRadius: '10px',
-                background: '#eff6ff',
-              }}
-            >
-              {this.state.error.message}
-            </pre>
-          </details>
+
           <div
             style={{
               display: 'flex',
@@ -131,6 +120,7 @@ export default class AppErrorBoundary extends Component<
             >
               Reintentar
             </button>
+
             <button
               type="button"
               onClick={this.goHome}

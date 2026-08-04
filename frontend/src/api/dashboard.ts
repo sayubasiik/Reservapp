@@ -144,7 +144,7 @@ function normalizeDashboardSummary(
     .map((item) => ({
       categoria: textValue(
         item.categoria,
-        'Sin categorÃ­a',
+        'Sin categoría',
       ),
       total: numberValue(item.total),
     }));
