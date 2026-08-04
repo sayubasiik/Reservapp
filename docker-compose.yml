@@ -39,6 +39,7 @@ services:
       db:
         condition: service_healthy
     environment:
+      ENVIRONMENT: development
       DATABASE_URL: postgresql://postgres:postgres@db:5432/reservas
       SECRET_KEY: clave-solo-para-desarrollo-local-no-usar-en-produccion
       ALGORITHM: HS256

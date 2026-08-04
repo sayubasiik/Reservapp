@@ -21,6 +21,11 @@ DEMO_BUSINESS_NAME = "ReservApp Demo"
 
 
 def seed():
+    if not settings.ADMIN_EMAIL or not settings.ADMIN_PASSWORD:
+        raise RuntimeError(
+            "Define ADMIN_EMAIL y ADMIN_PASSWORD antes de ejecutar el seed"
+        )
+
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
 

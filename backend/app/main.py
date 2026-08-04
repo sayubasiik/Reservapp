@@ -28,6 +28,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def add_security_headers(request, call_next):
+    """Añade cabeceras defensivas sin alterar el contrato de la API."""
+    response = await call_next(request)
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault("Referrer-Policy", "no-referrer")
+    response.headers.setdefault(
+        "Permissions-Policy",
+        "camera=(), microphone=(), geolocation=()",
+    )
+    return response
+
 # Registro de routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Autenticación"])
 app.include_router(users.router, prefix="/api/users", tags=["Usuarios"])
